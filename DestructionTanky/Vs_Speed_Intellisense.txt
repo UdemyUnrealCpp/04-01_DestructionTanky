@@ -1,0 +1,4 @@
+Add this to
+right click on project -> properties -> NMake -> Intellisense -> Additionnal options
+
+/YcBattleTank.h /YuBattleTank.h 
