@@ -216,8 +216,8 @@ void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
 
 
 	RotationYaw = RotationYaw;
-	this->m_turret->SetRotationYaw(RotationYaw - Tankrootrotation.Yaw);
-	
+    this->m_turret->SetRotationYaw(RotationYaw - Tankrootrotation.Yaw);
+	//this->GetOwner()->SetActorRelativeRotation(FRotator(0, RotationYaw, 0));
 	
 	
 	

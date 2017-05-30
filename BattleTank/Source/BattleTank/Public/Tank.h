@@ -20,13 +20,13 @@ private:
 	
 	virtual void BeginPlay() override;	
 
+	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 		int32 m_startingHealth = 100;
 
-
 	UPROPERTY(VisibleAnywhere, Category="Health")
-	int32 m_currentHealth;
+		int32 m_currentHealth;
 
 public:
 

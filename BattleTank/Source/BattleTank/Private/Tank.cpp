@@ -8,7 +8,7 @@
 ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;		
+	PrimaryActorTick.bCanEverTick = true;		
 }
 
 void ATank::BeginPlay()
@@ -16,6 +16,21 @@ void ATank::BeginPlay()
 	Super::BeginPlay();
 
 	m_currentHealth = m_startingHealth;
+}
+
+void ATank::Tick(float DeltaSeconds)
+{
+	// Call any parent class Tick implementation
+	Super::Tick(DeltaSeconds);
+
+	const FVector LocalMove = FVector(1000 * DeltaSeconds, 0.f, 0.f);
+
+	// Move plan forwards (with sweep so we stop when we collide with things)
+	//AddActorLocalOffset(LocalMove, true);
+	//AddMovementInput(LocalMove);
+	//AddActorLocalOffset(this->ConsumeMovementInputVector(), true);
+	
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *LocalMove.ToString());
 }
 
 float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
