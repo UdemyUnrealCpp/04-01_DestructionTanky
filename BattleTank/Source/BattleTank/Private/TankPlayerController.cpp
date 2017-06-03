@@ -47,7 +47,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 	FVector LookDirection;
 	GetSightRayHitDirection(LookDirection);
 	//UE_LOG(LogTemp, Warning, TEXT("LookDirection : %s"), *LookDirection.ToString());
-	//AimComp->AimAtDirection(LookDirection);
+	AimComp->AimAtDirection(LookDirection);
 }
 
 //Get world location if linetrace through crosshair, true if hits landscape

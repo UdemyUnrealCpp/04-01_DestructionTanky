@@ -164,7 +164,6 @@ FVector UTankAimingComponent::GetTurretLocation() const
 	return this->m_turret->GetComponentLocation();
 }
 
-
 FVector UTankAimingComponent::GetBarrelLocation() const
 {
 	if (!this->m_barrel) { return FVector::ZeroVector; }

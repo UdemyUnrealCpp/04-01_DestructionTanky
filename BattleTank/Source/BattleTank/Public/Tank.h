@@ -6,6 +6,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTankDelegate);
 
+class UTankMovementComponent;
+class UTankAimingComponent;
+
 UCLASS()
 class BATTLETANK_API ATank : public APawn
 {
@@ -27,6 +30,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category="Health")
 		int32 m_currentHealth;
+
+	UPROPERTY(EditDefaultsOnly)
+		float HeightElevation = 250.0f;
+
+	UPROPERTY(VisibleAnywhere)
+	UTankMovementComponent* m_tankMovement;
+
+	UPROPERTY(VisibleAnywhere)
+	UTankAimingComponent* m_tankAiming;
 
 public:
 

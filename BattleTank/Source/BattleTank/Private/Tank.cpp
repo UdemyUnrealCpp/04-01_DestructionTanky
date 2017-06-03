@@ -1,7 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
+
+#include "TankMovementComponent.h"
+#include "TankAimingComponent.h"
+
 #include "Tank.h"
+
+
 
 
 // Sets default values
@@ -9,6 +15,9 @@ ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;		
+
+	this->m_tankMovement = this->CreateDefaultSubobject<UTankMovementComponent>(FName("TankMovement"));
+	this->m_tankAiming = this->CreateDefaultSubobject<UTankAimingComponent>(FName("TankAiming"));
 }
 
 void ATank::BeginPlay()
@@ -23,7 +32,7 @@ void ATank::Tick(float DeltaSeconds)
 	// Call any parent class Tick implementation
 	Super::Tick(DeltaSeconds);
 
-	const FVector LocalMove = FVector(1000 * DeltaSeconds, 0.f, 0.f);
+	//const FVector LocalMove = FVector(1000 * DeltaSeconds, 0.f, 0.f);
 
 	// Move plan forwards (with sweep so we stop when we collide with things)
 	//AddActorLocalOffset(LocalMove, true);
@@ -31,6 +40,9 @@ void ATank::Tick(float DeltaSeconds)
 	//AddActorLocalOffset(this->ConsumeMovementInputVector(), true);
 	
 	//UE_LOG(LogTemp, Warning, TEXT("%s"), *LocalMove.ToString());
+	FVector Location = this->GetActorLocation();
+	Location.Z = this->HeightElevation;
+	this->SetActorLocation(Location);
 }
 
 float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)

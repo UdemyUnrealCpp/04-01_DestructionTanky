@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 		void InputMoveDirection(float ForwardAxisValue, float RightAxisValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+		void InputBoost(float AxisValue);
+
 private:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
@@ -37,10 +40,24 @@ private:
 	FVector MoveDirection;
 
 	UPROPERTY(EditAnywhere)
-	float m_Speed = 100.0f;
+	float m_Speed = 10000.0f;
 
-	//0-1
-	float m_AccelerationValue;
+	UPROPERTY(EditAnywhere)
+	float m_BoostSpeedMultiply = 10.0f;
+
+
+	float BoostValue = 1.0f;
+
+	FVector InputSaved;
+	float Acceleration = 0.0f;
+	float AccelerationTransitionSpeed = 1.0f;
+
+	float BoostAccelerationLimit = 10.0f;
+	float BoostAcceleration = 1.0f;
+	float BoostTransitionSpeed = 10.0f;
+	float BoostInput = 0.0f;
+	float BoostDurationLimit = 1.0f;
+	float BoostDurationCurrent = 1.0f;
 	
 	UPROPERTY(EditAnywhere)
 	float m_TimeToAccelerate = 1.0f;
