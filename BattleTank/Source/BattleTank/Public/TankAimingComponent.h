@@ -26,6 +26,7 @@ class BATTLETANK_API UTankAimingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void Initialise(UTankBarrel* barrelToSet, UTankTurret* turretToSet);
@@ -41,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Firing")
 	int32 GetAmmoLeft() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Firing")
+	int32 GetAmmoMax() const;
+
 	FVector GetTurretLocation() const;
 	FVector GetBarrelLocation() const;
 
@@ -48,18 +52,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 		EFiringState m_eFiringState = EFiringState::EFiringStatus_RELOADING;
 
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		TSubclassOf<AProjectile> m_projectileBlueprint;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 		float m_launchSpeed = 4000;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-		float m_reloadTimeInSeconds = 3.0f;
+		float m_ammoReloadTimeMaxInSeconds = 3.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-		int32 m_iNumberAmmoLeft = 3;
-
-	UPROPERTY(EditAnywhere, Category = "Setup")
-		TSubclassOf<AProjectile> m_projectileBlueprint;
-
+	UPROPERTY(EditDefaultsOnly, Category = "Ammo")
+		int32 m_iNumberAmmoMax = 5;
 
 private:
 	// Sets default values for this component's properties
@@ -68,6 +71,12 @@ private:
 	UTankBarrel* m_barrel = nullptr;
 	UTankTurret* m_turret = nullptr;
 
+	double m_lastFireTime = 0;	
+	FVector m_aimDirection;
+
+	int32 m_iNumberAmmoLeft;
+	float m_ammoReloadTimeCurrentInSeconds;
+
 	void MoveBarrelTowards(FVector AimDirection);
 	void MoveTurretTowards(FVector AimDirection);
 
@@ -75,9 +84,12 @@ private:
 
 	virtual void BeginPlay() override;
 
-	double m_lastFireTime = 0;
+	void UpdateFiringState();
+
+	void UpdateAmmo(float DeltaTime);
 
 	bool IsBarrelMoving();
-	FVector m_aimDirection;
-	
+
+	void Test();
+
 };

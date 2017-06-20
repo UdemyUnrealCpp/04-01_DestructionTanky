@@ -20,6 +20,8 @@ void UTankAimingComponent::Initialise(UTankBarrel* barrelToSet, UTankTurret* tur
 {
 	this->m_barrel = barrelToSet;
 	this->m_turret = turretToSet;
+
+	m_iNumberAmmoLeft = m_iNumberAmmoMax;
 }
 
 void UTankAimingComponent::BeginPlay()
@@ -30,31 +32,12 @@ void UTankAimingComponent::BeginPlay()
 void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	FString TankName = this->GetOwner()->GetName();
 	
-	if (m_iNumberAmmoLeft <= 0)
-	{
-		this->m_eFiringState = EFiringState::EFiringStatus_OUT_OF_AMMO;
-	}
-	else if ((FPlatformTime::Seconds() - m_lastFireTime) < m_reloadTimeInSeconds)
-	{
-		this->m_eFiringState = EFiringState::EFiringStatus_RELOADING;
-		//UE_LOG(LogTemp, Warning, TEXT("%s RELOADING"), *TankName);
+	UpdateAmmo(DeltaTime);
 
-	}
-	else if (IsBarrelMoving())
-	{
-		this->m_eFiringState = EFiringState::EFiringStatus_AIMING;
-		//UE_LOG(LogTemp, Warning, TEXT("%s AIMING"), *TankName);
+	UpdateFiringState();	
 
-	}
-	else
-	{
-		this->m_eFiringState = EFiringState::EFiringStatus_LOCKED;
-		//UE_LOG(LogTemp, Warning, TEXT("%s LOCKED"), *TankName);
-		
-	}
+	Test();
 }
 
 void UTankAimingComponent::AimAtLocation(FVector HitLocation)
@@ -142,7 +125,7 @@ void UTankAimingComponent::Fire()
 		NewProjectile->LaunchProjectile(m_aimDirection, this->m_launchSpeed);
 
 
-		m_lastFireTime = FPlatformTime::Seconds();
+		//m_lastFireTime = FPlatformTime::Seconds();
 		m_iNumberAmmoLeft = m_iNumberAmmoLeft -1;
 	}
 }
@@ -155,6 +138,11 @@ EFiringState UTankAimingComponent::GetFiringState() const
 int32 UTankAimingComponent::GetAmmoLeft() const
 {
 	return this->m_iNumberAmmoLeft;
+}
+
+int32 UTankAimingComponent::GetAmmoMax() const
+{
+	return this->m_iNumberAmmoMax;
 }
 
 FVector UTankAimingComponent::GetTurretLocation() const
@@ -274,3 +262,41 @@ bool UTankAimingComponent::IsBarrelMoving()
 	return !BarrelForward.Equals(m_aimDirection, 0.01f);
 }
 
+void UTankAimingComponent::UpdateFiringState()
+{
+	if (m_iNumberAmmoLeft <= 0)
+	{
+		this->m_eFiringState = EFiringState::EFiringStatus_OUT_OF_AMMO;
+	}
+	/*else if ((FPlatformTime::Seconds() - m_lastFireTime) < m_fullAmmoReloadTimeMaxInSeconds)
+	{
+		this->m_eFiringState = EFiringState::EFiringStatus_RELOADING;
+	}*/
+	else if (IsBarrelMoving())
+	{
+		this->m_eFiringState = EFiringState::EFiringStatus_AIMING;
+	}
+	else
+	{
+		this->m_eFiringState = EFiringState::EFiringStatus_LOCKED;
+	}
+}
+
+void UTankAimingComponent::UpdateAmmo(float DeltaTime)
+{
+	if (this->m_iNumberAmmoLeft < m_iNumberAmmoMax)
+	{
+		this->m_ammoReloadTimeCurrentInSeconds += DeltaTime;
+
+		if (this->m_ammoReloadTimeCurrentInSeconds >= this->m_ammoReloadTimeMaxInSeconds)
+		{
+			++this->m_iNumberAmmoLeft;
+			this->m_ammoReloadTimeCurrentInSeconds = 0.0f;
+		}
+	}
+}
+
+void UTankAimingComponent::Test()
+{
+	UE_LOG(LogTemp, Warning, TEXT("TANK"));
+}
