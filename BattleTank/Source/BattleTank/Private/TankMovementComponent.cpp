@@ -17,6 +17,13 @@ void UTankMovementComponent::Initialise(UHoverTankTrack *HoverTrackToSet)
 	//this->HoverTrack = HoverTrackToSet;
 }
 
+void UTankMovementComponent::BeginPlay()
+{
+	this->BoostAccelerationCurrent = this->BoostAccelerationLimitMin;
+	this->BoostDurationCurrent = this->BoostDurationMax;
+	this->AccelerationCurrent = this->AccelerationLimitMin;
+}
+
 void UTankMovementComponent::InputMoveDirection(float ForwardAxisValue, float RightAxisValue)
 {
 	//if (!ensure(HoverTrack)) { return; }
@@ -45,6 +52,11 @@ void UTankMovementComponent::InputBoost(float AxisValue)
 	BoostInput = AxisValue;
 }
 
+float UTankMovementComponent::GetSpeedCurrent()
+{
+	return m_Speed * this->AccelerationCurrent * this->BoostAccelerationCurrent;
+}
+
 void UTankMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -63,49 +75,52 @@ void UTankMovementComponent::Move(float DeltaTime)
 	if (InputSize > 0.25f)
 	{
 		this->InputSaved = Input;
-		this->Acceleration += DeltaTime * this->AccelerationTransitionSpeed;
+		this->AccelerationCurrent += DeltaTime * this->AccelerationTransitionSpeed;
 	}
 	else
 	{
-		this->Acceleration -= DeltaTime * this->AccelerationTransitionSpeed;
+		this->AccelerationCurrent -= DeltaTime * this->AccelerationTransitionSpeed;
 	}
 
-	this->Acceleration = FMath::Clamp<float>(this->Acceleration, 0.0f, 1.0f);
+	this->AccelerationCurrent = FMath::Clamp<float>(this->AccelerationCurrent, this->AccelerationLimitMin, this->AccelerationLimitMax);
 
-	if (this->Acceleration <= 0.0f)
+	if (this->AccelerationCurrent <= 0.0f)
 	{
 		this->InputSaved = FVector::ZeroVector;
 	}
 	
-	FVector ForceApplied = UpdatedComponent->GetForwardVector() * this->InputSaved.X;
-	ForceApplied += UpdatedComponent->GetRightVector() * this->InputSaved.Y;
+	FVector InputForceApplied = UpdatedComponent->GetForwardVector() * this->InputSaved.X;
+	InputForceApplied += UpdatedComponent->GetRightVector() * this->InputSaved.Y;
+	InputForceApplied = InputForceApplied.GetSafeNormal();
 
 	//boost
 	if (BoostInput > 0.0f)
 	{
-		this->BoostAcceleration += DeltaTime * this->BoostTransitionSpeed;
-		BoostDurationCurrent -= DeltaTime;
+		this->BoostAccelerationCurrent += DeltaTime * this->BoostTransitionSpeed;
+		BoostDurationCurrent -= DeltaTime * this->BoostDurationDecreaseSpeed;
 	}
 	else
 	{
-		this->BoostAcceleration -= DeltaTime * this->BoostTransitionSpeed * 2.0f;
-		BoostDurationCurrent += (DeltaTime * 0.5f);
+		//this->BoostAccelerationCurrent -= DeltaTime * this->BoostTransitionSpeed;
+		this->BoostAccelerationCurrent = 1.0f;
+		BoostDurationCurrent += DeltaTime * this->BoostDurationIncreaseSpeed;
 	}
-	this->BoostAcceleration = FMath::Clamp<float>(this->BoostAcceleration, 1.0f, BoostAccelerationLimit);
-	BoostDurationCurrent = FMath::Clamp<float>(BoostDurationCurrent, 0.0f, BoostDurationLimit);
 
+	this->BoostAccelerationCurrent = FMath::Clamp<float>(this->BoostAccelerationCurrent, this->BoostAccelerationLimitMin, this->BoostAccelerationLimitMax);
+	BoostDurationCurrent = FMath::Clamp<float>(BoostDurationCurrent, 0.0f, BoostDurationMax);	
+	
 	if (BoostDurationCurrent <= 0.0f)
 	{
-		this->BoostAcceleration = 1.0f;
+		this->BoostAccelerationCurrent = 1.0f;
 	}
 
+	//UE_LOG(LogTemp, Warning, TEXT("A %f __ BA %f __ D %f"), this->AccelerationCurrent, this->BoostAccelerationCurrent, BoostDurationCurrent);
+	
+	FVector NewSpeedVector = InputForceApplied * this->GetSpeedCurrent();
+	//UE_LOG(LogTemp, Warning, TEXT("speed = %s "), *NewSpeedVector.ToString());
 
-	UE_LOG(LogTemp, Warning, TEXT("BA %f __ D %f"), this->BoostAcceleration, BoostDurationCurrent);
-
-	this->MoveUpdatedComponent(ForceApplied * m_Speed * this->Acceleration * this->BoostAcceleration * DeltaTime, this->GetOwner()->GetActorRotation(), true);
+	this->MoveUpdatedComponent(NewSpeedVector * DeltaTime, this->GetOwner()->GetActorRotation(), true);
 	this->UpdateComponentVelocity();
-
-	BoostValue = 1.0f;
 }
 
 void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)

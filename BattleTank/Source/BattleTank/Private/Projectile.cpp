@@ -35,6 +35,7 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();	
 
 	this->m_collisionMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	this->m_collisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
 }
 
 
@@ -44,16 +45,31 @@ void AProjectile::LaunchProjectile(float Speed)
 	this->m_projectileMovement->Activate();
 }
 
-void AProjectile::LaunchProjectile(FVector Direction,float Speed)
+void AProjectile::LaunchProjectile(FVector Direction,float Speed, AActor* Owner)
 {
+	UE_LOG(LogTemp, Warning, TEXT("LAUNCH __ %s __ S = %f"), *Direction.ToString(), Speed);
 	this->m_projectileMovement->SetVelocityInLocalSpace(FVector::ForwardVector * Speed);
 	this->m_projectileMovement->Activate();
+
+	this->m_Owner = Owner;
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("HIT %s"), *HitComponent->GetName())
+	/*
+	if (OtherComp->GetOwner() != nullptr)
+	{
+		if (OtherComp->GetOwner() == this->m_Owner)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HIT OWNER %s = %s"), *this->m_Owner->GetName(), *OtherComp->GetOwner()->GetName())
+			return;
+		}
+	}*/
 
+	//UE_LOG(LogTemp, Warning, TEXT("HIT %s"), *OtherComp->GetOwner()->GetName())
+	//UE_LOG(LogTemp, Warning, TEXT("HIT %s __ %s"), *HitComponent->GetOwner()->GetName(), *OtherComp->GetOwner()->GetName())
+
+		/*
 	this->m_launchBlast->Deactivate();
 	this->m_impactBlast->Activate();
 
@@ -74,6 +90,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 	FTimerHandle TimerHandle;
 	this->GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AProjectile::OnTimerExpire, this->m_destroyDelay, false);
+	*/
+}
+
+void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("OVERLAPP %s __ %s"), *OverlappedComp->GetOwner()->GetName(), *OtherComp->GetOwner()->GetName())
 }
 
 void AProjectile::OnTimerExpire()

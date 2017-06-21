@@ -30,8 +30,8 @@ void ATankAIController::Tick(float fDeltaTime)
 
 	AimComp->AimAtLocation(PlayerTank->GetActorLocation());
 
-	if(AimComp->GetFiringState() == EFiringState::EFiringStatus_LOCKED)
-		AimComp->Fire();
+	/*if(AimComp->GetFiringState() == EFiringState::EFiringStatus_LOCKED)
+		AimComp->Fire();*/
 }
 
 APawn* ATankAIController::GetPlayerTank() const

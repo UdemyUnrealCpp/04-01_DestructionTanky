@@ -32,19 +32,19 @@ private:
 		int32 m_currentHealth;
 
 	UPROPERTY(EditDefaultsOnly)
-		float HeightElevation = 250.0f;
+		float HeightElevation = 250.0f;	
 
 	UPROPERTY(VisibleAnywhere)
-	UTankMovementComponent* m_tankMovement;
+		UTankMovementComponent* m_tankMovement;
 
 	UPROPERTY(VisibleAnywhere)
-	UTankAimingComponent* m_tankAiming;
+		UTankAimingComponent* m_tankAiming;
 
 public:
 
 	UFUNCTION(BlueprintPure, Category="Health")
 	float GetHealthPercent() const;
 
-	FTankDelegate OnDeath;
+	FTankDelegate OnDeath;	
 };
 

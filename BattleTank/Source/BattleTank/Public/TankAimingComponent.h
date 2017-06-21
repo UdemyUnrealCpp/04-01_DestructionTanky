@@ -35,7 +35,7 @@ public:
 	void AimAtDirection(FVector Direction);
 
 	UFUNCTION(BlueprintCallable, Category = "Firing")
-	void Fire();	
+	void Fire(float TankMovementSpeed);
 	
 	EFiringState GetFiringState() const;	
 
@@ -44,6 +44,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Firing")
 	int32 GetAmmoMax() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Firing")
+	int32 GetAmmoReloadTimePercentage() const;
 
 	FVector GetTurretLocation() const;
 	FVector GetBarrelLocation() const;
@@ -56,10 +59,10 @@ protected:
 		TSubclassOf<AProjectile> m_projectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-		float m_launchSpeed = 4000;
+		float m_launchSpeed = 40000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-		float m_ammoReloadTimeMaxInSeconds = 3.0f;
+		float m_ammoReloadTimeMaxInSeconds = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ammo")
 		int32 m_iNumberAmmoMax = 5;

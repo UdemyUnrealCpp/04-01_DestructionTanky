@@ -37,7 +37,9 @@ void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickTy
 
 	UpdateFiringState();	
 
-	Test();
+	//UE_LOG(LogTemp, Warning, TEXT("%d"), GetAmmoReloadTimePercentage());
+
+	//UE_LOG(LogTemp, Warning, TEXT("test"));
 }
 
 void UTankAimingComponent::AimAtLocation(FVector HitLocation)
@@ -107,7 +109,7 @@ void UTankAimingComponent::AimAtDirection(FVector Direction)
 	MoveTurretTowards(m_aimDirection);
 }
 
-void UTankAimingComponent::Fire()
+void UTankAimingComponent::Fire(float TankMovementSpeed)
 {
 	if (this->m_eFiringState == EFiringState::EFiringStatus_LOCKED || this->m_eFiringState == EFiringState::EFiringStatus_AIMING)
 	{
@@ -122,8 +124,9 @@ void UTankAimingComponent::Fire()
 		FRotator StartRotation = m_aimDirection.Rotation();
 		AProjectile* NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 		//NewProjectile->LaunchProjectile(this->m_launchSpeed);
-		NewProjectile->LaunchProjectile(m_aimDirection, this->m_launchSpeed);
-
+		UE_LOG(LogTemp, Warning, TEXT("%f"), TankMovementSpeed);
+		NewProjectile->LaunchProjectile(m_aimDirection, this->m_launchSpeed, this->GetOwner());
+		NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 
 		//m_lastFireTime = FPlatformTime::Seconds();
 		m_iNumberAmmoLeft = m_iNumberAmmoLeft -1;
@@ -143,6 +146,13 @@ int32 UTankAimingComponent::GetAmmoLeft() const
 int32 UTankAimingComponent::GetAmmoMax() const
 {
 	return this->m_iNumberAmmoMax;
+}
+
+int32 UTankAimingComponent::GetAmmoReloadTimePercentage() const
+{
+	float ReloadTotalSecond = this->m_iNumberAmmoMax * this->m_ammoReloadTimeMaxInSeconds;
+	float Percentage = ((this->m_iNumberAmmoLeft * this->m_ammoReloadTimeMaxInSeconds) + this->m_ammoReloadTimeCurrentInSeconds) / ReloadTotalSecond;
+	return Percentage * 100.0f;
 }
 
 FVector UTankAimingComponent::GetTurretLocation() const
@@ -298,5 +308,5 @@ void UTankAimingComponent::UpdateAmmo(float DeltaTime)
 
 void UTankAimingComponent::Test()
 {
-	UE_LOG(LogTemp, Warning, TEXT("TANK"));
+	
 }

@@ -32,6 +32,7 @@ void ATank::Tick(float DeltaSeconds)
 	// Call any parent class Tick implementation
 	Super::Tick(DeltaSeconds);
 
+
 	//const FVector LocalMove = FVector(1000 * DeltaSeconds, 0.f, 0.f);
 
 	// Move plan forwards (with sweep so we stop when we collide with things)
