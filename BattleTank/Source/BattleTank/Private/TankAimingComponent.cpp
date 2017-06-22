@@ -124,9 +124,9 @@ void UTankAimingComponent::Fire(float TankMovementSpeed)
 		FRotator StartRotation = m_aimDirection.Rotation();
 		AProjectile* NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 		//NewProjectile->LaunchProjectile(this->m_launchSpeed);
-		UE_LOG(LogTemp, Warning, TEXT("%f"), TankMovementSpeed);
+		UE_LOG(LogTemp, Warning, TEXT("T Speed %f"), TankMovementSpeed);
 		NewProjectile->LaunchProjectile(m_aimDirection, this->m_launchSpeed, this->GetOwner());
-		NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
+		//NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 
 		//m_lastFireTime = FPlatformTime::Seconds();
 		m_iNumberAmmoLeft = m_iNumberAmmoLeft -1;

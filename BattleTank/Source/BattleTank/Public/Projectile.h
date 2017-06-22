@@ -22,6 +22,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	//UPROPERTY(VisibleAnywhere, Category = "Setup")
+	//	USceneComponent* m_projectileComponent = nullptr;
+
 	UPROPERTY(VisibleAnywhere, Category="Setup")
 		UProjectileMovementComponent* m_projectileMovement = nullptr;
 
@@ -55,6 +58,6 @@ private:
 
 	void OnTimerExpire();	
 
-	AActor* m_Owner;
+	//AActor* m_Owner;
 	
 };
