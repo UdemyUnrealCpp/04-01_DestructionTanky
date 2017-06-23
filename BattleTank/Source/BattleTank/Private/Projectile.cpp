@@ -10,26 +10,26 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	//this->m_projectileComponent = CreateDefaultSubobject<USceneComponent>(FName("Projectile"));
-	//this->SetRootComponent(this->m_projectileComponent);
 
-	this->m_collisionMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Collision Mesh"));
-	this->SetRootComponent(this->m_collisionMesh);
-	//this->m_collisionMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	this->m_collisionMesh->SetNotifyRigidBodyCollision(true);
+	this->m_collisionComp = CreateDefaultSubobject<USphereComponent>(FName("Collision Comp"));
+	this->SetRootComponent(this->m_collisionComp);
+	this->m_collisionComp->SetNotifyRigidBodyCollision(true);
 
 	this->m_projectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement"));
 	this->m_projectileMovement->bAutoActivate = false;	
 
+	this->m_meshComp = CreateDefaultSubobject<UStaticMeshComponent>(FName("Mesh Comp"));
+	this->m_meshComp->AttachToComponent(this->RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
 	this->m_launchBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Launch Blast"));
-	this->m_launchBlast->AttachToComponent(this->m_collisionMesh, FAttachmentTransformRules::KeepRelativeTransform);
+	this->m_launchBlast->AttachToComponent(this->RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	this->m_impactBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Impact Blast"));
-	this->m_impactBlast->AttachToComponent(this->m_collisionMesh, FAttachmentTransformRules::KeepRelativeTransform);
+	this->m_impactBlast->AttachToComponent(this->RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	this->m_impactBlast->bAutoActivate = false;
 
 	this->m_explosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("Explosion Force"));
-	this->m_explosionForce->AttachToComponent(this->m_collisionMesh, FAttachmentTransformRules::KeepRelativeTransform);
+	this->m_explosionForce->AttachToComponent(this->RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
@@ -37,8 +37,8 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();	
 
-	this->m_collisionMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
-	this->m_collisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
+	this->m_collisionComp->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	this->m_collisionComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
 
 	//FVector vectir = this->GetActorForwardVector();
 	//FVector scale = this->GetActorScale() / 2.0f;
@@ -85,7 +85,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	this->m_explosionForce->FireImpulse();
 
 	this->SetRootComponent(this->m_impactBlast);
-	this->m_collisionMesh->DestroyComponent();
+	this->m_collisionComp->DestroyComponent();
 
 	UGameplayStatics::ApplyRadialDamage(
 		this,

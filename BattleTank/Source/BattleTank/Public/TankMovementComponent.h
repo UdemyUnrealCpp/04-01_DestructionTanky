@@ -24,11 +24,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 		void InputMoveDirection(float ForwardAxisValue, float RightAxisValue);
 
+	/*UFUNCTION(BlueprintCallable, Category = "Input")
+		void InputBoost(float AxisValue);*/
 	UFUNCTION(BlueprintCallable, Category = "Input")
-		void InputBoost(float AxisValue);
+		void StartBoost();
 	
 	UFUNCTION(BlueprintCallable, Category = "Speed")
 		float GetSpeedCurrent();
+
+	UFUNCTION(BlueprintCallable, Category = "Boost")
+		bool IsBoosting() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Boost")
+		int32 GetBoostGaugeCurrent() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Boost")
+		int32 GetBoostGaugeMax() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Boost")
+		int32 GetBoostGaugeReloadTimePercentage() const;
 
 private:
 
@@ -41,6 +55,8 @@ private:
 
 	void Move(float DeltaTime);
 
+	void UpdateBoost(float DeltaTime);
+
 	//UHoverTankTrack *HoverTrack = nullptr;	
 	FVector MoveDirection;
 
@@ -50,8 +66,6 @@ private:
 	
 	//keep track of move input 
 	FVector InputSaved;
-	//keep track of boost input
-	float BoostInput = 0.0f;
 
 	//accelaration current value
 	float AccelerationCurrent = 0.0f;
@@ -60,26 +74,30 @@ private:
 	//accelaration limit max value
 	float AccelerationLimitMax = 1.0f;
 	//accelaration speed transition between min <-> max
-	float AccelerationTransitionSpeed = 1.0f;
+	float AccelerationTransitionSpeed = 1.0f;	
 
 	//boost current value
 	float BoostAccelerationCurrent;
-	//boost limit min value
-	float BoostAccelerationLimitMin = 1.0f;	
-	//boost limit max value
-	UPROPERTY(EditAnywhere, Category = "Boost")
-	float BoostAccelerationLimitMax = 5.0f;
-	//boost speed transition between min <-> max
-	UPROPERTY(EditAnywhere, Category = "Boost")
-	float BoostTransitionSpeed = 25.0f;		
-	//boost duration max
-	UPROPERTY(EditAnywhere, Category = "Boost")
-	float BoostDurationMax = 1.0f;
-	float BoostDurationCurrent;
-	//speed used when increase BoostDurationCurrent
-	UPROPERTY(EditAnywhere, Category = "Boost")
-	float BoostDurationIncreaseSpeed = 1.0f;
-	//speed used when decrease BoostDurationCurrent
-	UPROPERTY(EditAnywhere, Category = "Boost")
-	float BoostDurationDecreaseSpeed = 1.5f;
+	UPROPERTY(EditDefaultsOnly, Category = "Boost")
+	float m_BoostDurationMax = 0.2f;
+	float m_BoostDurationCurrent;
+	//max amplitude for sin or cos function
+	UPROPERTY(EditDefaultsOnly, Category = "Boost")
+	float m_BoostValueAmplitudeMax = 100000.0f;
+	//clamped value for boost
+	//determine the speed transition between 0 & max amplitude for sin & cos function 
+	UPROPERTY(EditDefaultsOnly, Category = "Boost")
+	float m_BoostValueClampedMax = 25000.0f;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boost")
+		int32 m_BoostGaugeNumberMax = 5;
+		int32 m_BoostGaugeNumberCurrent;
+
+		//in seconds
+	UPROPERTY(EditDefaultsOnly, Category = "Boost")
+		float m_BoostGaugeReloadTimeMax = 1.0f;
+	//in seconds
+	float m_BoostGaugeReloadTimeCurrent;
+
 };

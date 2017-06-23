@@ -22,14 +22,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	//UPROPERTY(VisibleAnywhere, Category = "Setup")
-	//	USceneComponent* m_projectileComponent = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category="Setup")
+	UPROPERTY(EditAnywhere, Category="Setup")
 		UProjectileMovementComponent* m_projectileMovement = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Setup")
-		UStaticMeshComponent* m_collisionMesh = nullptr;
+		USphereComponent* m_collisionComp = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Setup")
+		UStaticMeshComponent * m_meshComp = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Setup")
 		UParticleSystemComponent* m_launchBlast = nullptr;
@@ -39,7 +39,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Setup")
 		URadialForceComponent* m_explosionForce = nullptr;
-
 
 private:
 

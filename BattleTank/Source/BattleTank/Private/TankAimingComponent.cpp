@@ -150,8 +150,9 @@ int32 UTankAimingComponent::GetAmmoMax() const
 
 int32 UTankAimingComponent::GetAmmoReloadTimePercentage() const
 {
-	float ReloadTotalSecond = this->m_iNumberAmmoMax * this->m_ammoReloadTimeMaxInSeconds;
-	float Percentage = ((this->m_iNumberAmmoLeft * this->m_ammoReloadTimeMaxInSeconds) + this->m_ammoReloadTimeCurrentInSeconds) / ReloadTotalSecond;
+	float allAmmoReloadTotalInSeconds = this->m_iNumberAmmoMax * this->m_ammoReloadTimeMaxInSeconds;
+	float allAmmoReloadCurrentInSeconds = this->m_iNumberAmmoLeft * this->m_ammoReloadTimeMaxInSeconds;
+	float Percentage = (allAmmoReloadCurrentInSeconds + this->m_ammoReloadTimeCurrentInSeconds) / allAmmoReloadTotalInSeconds;
 	return Percentage * 100.0f;
 }
 

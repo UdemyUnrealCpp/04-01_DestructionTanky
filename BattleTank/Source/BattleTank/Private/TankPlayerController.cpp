@@ -2,6 +2,7 @@
 
 #include "BattleTank.h"
 #include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
 #include "TankPlayerController.h"
 #include "Tank.h"
 
@@ -13,10 +14,12 @@ void ATankPlayerController::BeginPlay()
 	if (!GetPawn()) { return; } //if not possessing
 
 	UTankAimingComponent* AimComp = this->GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	UTankMovementComponent* MoveComp = this->GetPawn()->FindComponentByClass<UTankMovementComponent>();
 
 	if (!ensure(AimComp)) { return; }
+	if (!ensure(MoveComp)) { return; }
 		
-	FoundAimingComponent(AimComp);
+	FoundAimingAndMovementComponent(AimComp, MoveComp);
 }
 
 

@@ -59,7 +59,7 @@ protected:
 		TSubclassOf<AProjectile> m_projectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-		float m_launchSpeed = 40000.0f;
+		float m_launchSpeed = 100000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 		float m_ammoReloadTimeMaxInSeconds = 1.0f;

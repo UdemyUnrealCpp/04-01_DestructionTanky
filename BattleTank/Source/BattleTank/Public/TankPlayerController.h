@@ -8,6 +8,7 @@
 #include "TankPlayerController.generated.h"
 
 class UTankAimingComponent;
+class UTankMovementComponent;
 
 /**
  * 
@@ -30,7 +31,7 @@ public:
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
-	void FoundAimingComponent(UTankAimingComponent* AimCompRef);
+	void FoundAimingAndMovementComponent(UTankAimingComponent* AimCompRef, UTankMovementComponent* MovementCompRef);
 
 private:
 
