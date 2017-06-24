@@ -3,23 +3,20 @@
 #include "BattleTank.h"
 #include "TankAimingComponent.h"
 #include "TankMovementComponent.h"
-#include "TankPlayerController.h"
 #include "Tank.h"
+#include "TankPlayerController.h"
+
 
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!GetPawn()) { return; } //if not possessing
+	m_tankControlled = Cast<ATank>(this->GetPawn());
 
-	UTankAimingComponent* AimComp = this->GetPawn()->FindComponentByClass<UTankAimingComponent>();
-	UTankMovementComponent* MoveComp = this->GetPawn()->FindComponentByClass<UTankMovementComponent>();
-
-	if (!ensure(AimComp)) { return; }
-	if (!ensure(MoveComp)) { return; }
+	if (!ensure(m_tankControlled)) { return; }
 		
-	FoundAimingAndMovementComponent(AimComp, MoveComp);
+	InitPlayerUIWidget(m_tankControlled);
 }
 
 
@@ -33,7 +30,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 {
 	if (!GetPawn()) { return; } //if not possessing
 
-	UTankAimingComponent* AimComp = this->GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	UTankAimingComponent* AimComp = this->m_tankControlled->GetTankAimingComponent();
 	if (!ensure(AimComp)) { return; }
 
 	/*
@@ -131,6 +128,11 @@ FVector ATankPlayerController::GetSightLookDirection() const
 	return LookDirection;
 }
 
+ATank* ATankPlayerController::GetTankControlled() const
+{
+	return this->m_tankControlled;
+}
+
 //deproject the screen position of the crosshair to a world direction
 bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const
 {	
@@ -176,5 +178,17 @@ void ATankPlayerController::OnPossessedTankDeath()
 {
 	StartSpectatingOnly();
 }
+
+void ATankPlayerController::InputBoost()
+{
+	this->m_tankControlled->LaunchBoost();
+}
+
+void ATankPlayerController::InputFire()
+{
+	this->m_tankControlled->Fire();
+}
+
+
 
 

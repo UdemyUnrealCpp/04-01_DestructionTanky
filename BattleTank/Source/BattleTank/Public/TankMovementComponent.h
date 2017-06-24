@@ -10,7 +10,7 @@ class UTankTrack;
 /**
  *  Responsible for driving the tank track
  */
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS()
 class BATTLETANK_API UTankMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()	
@@ -27,7 +27,7 @@ public:
 	/*UFUNCTION(BlueprintCallable, Category = "Input")
 		void InputBoost(float AxisValue);*/
 	UFUNCTION(BlueprintCallable, Category = "Input")
-		void StartBoost();
+		void LaunchBoost();
 	
 	UFUNCTION(BlueprintCallable, Category = "Speed")
 		float GetSpeedCurrent();

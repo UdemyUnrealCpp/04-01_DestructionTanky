@@ -109,7 +109,7 @@ void UTankAimingComponent::AimAtDirection(FVector Direction)
 	MoveTurretTowards(m_aimDirection);
 }
 
-void UTankAimingComponent::Fire(float TankMovementSpeed)
+void UTankAimingComponent::Fire()
 {
 	if (this->m_eFiringState == EFiringState::EFiringStatus_LOCKED || this->m_eFiringState == EFiringState::EFiringStatus_AIMING)
 	{
@@ -124,7 +124,6 @@ void UTankAimingComponent::Fire(float TankMovementSpeed)
 		FRotator StartRotation = m_aimDirection.Rotation();
 		AProjectile* NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 		//NewProjectile->LaunchProjectile(this->m_launchSpeed);
-		UE_LOG(LogTemp, Warning, TEXT("T Speed %f"), TankMovementSpeed);
 		NewProjectile->LaunchProjectile(m_aimDirection, this->m_launchSpeed, this->GetOwner());
 		//NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 

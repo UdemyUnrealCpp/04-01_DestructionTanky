@@ -14,6 +14,29 @@ class BATTLETANK_API ATank : public APawn
 {
 	GENERATED_BODY()	
 	
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+		void InitialiseMoveComp(UHoverTankTrack *HoverTrackToSet);
+
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+		void InitialiseAimComp(UTankBarrel* barrelToSet, UTankTurret* turretToSet);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+		void LaunchBoost();
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+		void Fire();
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+		float GetHealthPercent() const;
+
+	FTankDelegate OnDeath;
+	
+	UFUNCTION(BlueprintCallable, Category = "CompRef")
+	UTankMovementComponent* GetTankMovementComponent() const;
+	UFUNCTION(BlueprintCallable, Category = "CompRef")
+	UTankAimingComponent* GetTankAimingComponent() const;
 
 private:
 	// Sets default values for this pawn's properties
@@ -34,17 +57,10 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 		float HeightElevation = 250.0f;	
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Component")
 		UTankMovementComponent* m_tankMovement;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Component")
 		UTankAimingComponent* m_tankAiming;
-
-public:
-
-	UFUNCTION(BlueprintPure, Category="Health")
-	float GetHealthPercent() const;
-
-	FTankDelegate OnDeath;	
 };
 

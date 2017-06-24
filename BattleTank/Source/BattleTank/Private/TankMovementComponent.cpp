@@ -54,7 +54,7 @@ void UTankMovementComponent::InputBoost(float AxisValue)
 	BoostInput = AxisValue;
 }*/
 
-void UTankMovementComponent::StartBoost()
+void UTankMovementComponent::LaunchBoost()
 {
 	if (this->InputSaved.SizeSquared() <= 0.0f || this->m_BoostGaugeNumberCurrent == 0)
 		return;

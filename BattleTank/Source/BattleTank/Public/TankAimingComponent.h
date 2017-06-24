@@ -35,7 +35,7 @@ public:
 	void AimAtDirection(FVector Direction);
 
 	UFUNCTION(BlueprintCallable, Category = "Firing")
-	void Fire(float TankMovementSpeed);
+	void Fire();
 	
 	EFiringState GetFiringState() const;	
 

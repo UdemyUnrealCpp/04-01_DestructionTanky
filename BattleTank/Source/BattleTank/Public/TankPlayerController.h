@@ -7,8 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h"
 
-class UTankAimingComponent;
-class UTankMovementComponent;
+class ATank;
 
 /**
  * 
@@ -23,15 +22,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		float CrosshairXLocation = 0.5f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)		
-		float CrosshairYLocation = 1.0f / 3.0f;
-	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-		float m_launchSpeed = 4000;
-	
+		float CrosshairYLocation = 1.0f / 3.0f;	
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+		void InputBoost();
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+		void InputFire();
+
+	UFUNCTION(BlueprintCallable, Category = "TankRef")
+		ATank* GetTankControlled() const;
+
 	
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
-	void FoundAimingAndMovementComponent(UTankAimingComponent* AimCompRef, UTankMovementComponent* MovementCompRef);
+	void InitPlayerUIWidget(ATank* TankPlayerRef);
 
 private:
 
@@ -57,4 +63,6 @@ private:
 
 	UFUNCTION()
 		void OnPossessedTankDeath();
+
+	ATank* m_tankControlled;
 };
