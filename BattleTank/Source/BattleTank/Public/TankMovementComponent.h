@@ -22,10 +22,8 @@ public:
 		void Initialise(UHoverTankTrack *HoverTrackToSet);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
-		void InputMoveDirection(float ForwardAxisValue, float RightAxisValue);
+		void Move(float ForwardAxisValue, float RightAxisValue);
 
-	/*UFUNCTION(BlueprintCallable, Category = "Input")
-		void InputBoost(float AxisValue);*/
 	UFUNCTION(BlueprintCallable, Category = "Input")
 		void LaunchBoost();
 	
@@ -53,7 +51,7 @@ private:
 	//Called from the pathfinding logic by the AI controllers
 	virtual void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;
 
-	void Move(float DeltaTime);
+	void UpdateMovement(float DeltaTime);
 
 	void UpdateBoost(float DeltaTime);
 

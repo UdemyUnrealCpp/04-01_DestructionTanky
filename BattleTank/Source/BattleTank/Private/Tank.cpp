@@ -98,6 +98,14 @@ void ATank::Fire()
 	this->m_tankAiming->Fire();
 }
 
+void ATank::Move(float ForwardAxisValue, float RightAxisValue)
+{
+	if (!ensure(this->m_tankMovement))
+		return;
+
+	this->m_tankMovement->Move(ForwardAxisValue, RightAxisValue);
+}
+
 float ATank::GetHealthPercent() const
 {
 	return (float)(this->m_currentHealth) / (float)(this->m_startingHealth);

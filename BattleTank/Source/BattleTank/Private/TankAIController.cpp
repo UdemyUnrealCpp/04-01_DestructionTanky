@@ -16,6 +16,7 @@ void ATankAIController::Tick(float fDeltaTime)
 {
 	Super::Tick(fDeltaTime);
 
+	/*
 	APawn* ControlledTank = this->GetPawn();
 	APawn* PlayerTank = this->GetPlayerTank();
 
@@ -30,7 +31,7 @@ void ATankAIController::Tick(float fDeltaTime)
 
 	AimComp->AimAtLocation(PlayerTank->GetActorLocation());
 
-	/*if(AimComp->GetFiringState() == EFiringState::EFiringStatus_LOCKED)
+	if(AimComp->GetFiringState() == EFiringState::EFiringStatus_LOCKED)
 		AimComp->Fire();*/
 }
 

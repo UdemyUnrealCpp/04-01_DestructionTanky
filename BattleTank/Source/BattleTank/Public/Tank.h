@@ -22,14 +22,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 		void InitialiseAimComp(UTankBarrel* barrelToSet, UTankTurret* turretToSet);
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
 		void LaunchBoost();
-
-	UFUNCTION(BlueprintCallable, Category = "Input")
 		void Fire();
+		void Move(float ForwardAxisValue, float RightAxisValue);
 
 	UFUNCTION(BlueprintPure, Category = "Health")
 		float GetHealthPercent() const;
+
+
 
 	FTankDelegate OnDeath;
 	

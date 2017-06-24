@@ -35,68 +35,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickTy
 	
 	UpdateAmmo(DeltaTime);
 
-	UpdateFiringState();	
-
-	//UE_LOG(LogTemp, Warning, TEXT("%d"), GetAmmoReloadTimePercentage());
-
-	//UE_LOG(LogTemp, Warning, TEXT("test"));
-}
-
-void UTankAimingComponent::AimAtLocation(FVector HitLocation)
-{
-	if (!ensure(m_barrel))
-		return;
-
-	//UE_LOG(LogTemp, Warning, TEXT("TANK %s aiming at %s from %s"), *this->GetOwner()->GetName(), *(HitLocation.ToString()), *this->m_barrel->GetComponentLocation().ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("Firing at %f"), launchSpeed);
-
-	FVector OutLaunchVelocity;
-	FVector StartLocation = this->m_turret->GetComponentLocation();
-	//m_barrel->GetSocketWorldLocationAndRotation(FName("Projectile"), StartLocation, StartRotation);
-	TArray<AActor*> ignoredActors = TArray<AActor*>();
-	ignoredActors.Add(this->GetOwner());
-	
-	//this bug and gives a lot of no solution
-	/*bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
-	(
-		this, OutLaunchVelocity,
-		StartLocation, HitLocation, launchSpeed,
-		false, 0.0f, 0.0f,
-		ESuggestProjVelocityTraceOption::TraceFullPath, FCollisionResponseParams::DefaultResponseParam,
-		ignoredActors,
-		true
-	);*/
-	
-	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
-	(
-		this, OutLaunchVelocity,
-		StartLocation, HitLocation, this->m_launchSpeed,
-		false, 0.0f, 0.0f,
-		ESuggestProjVelocityTraceOption::TraceFullPath, // Paramater must be present to prevent bug
-		FCollisionResponseParams::DefaultResponseParam,
-		ignoredActors,
-		false
-	);
-
-	if (bHaveAimSolution)
-	{
-		m_aimDirection = OutLaunchVelocity.GetSafeNormal();
-		//UE_LOG(LogTemp, Warning, TEXT("Aiming at %s"), *AimDirection.ToString());
-		MoveBarrelTowards(m_aimDirection);
-		MoveTurretTowards(m_aimDirection);
-
-		//float Time = this->GetWorld()->GetTimeSeconds();
-		//UE_LOG(LogTemp, Warning, TEXT("%f : Aim solution found %s"), Time, *OutLaunchVelocity.ToString());
-	}
-	else
-	{
-		m_aimDirection = FVector::ZeroVector;
-
-		//float Time = this->GetWorld()->GetTimeSeconds();
-		//UE_LOG(LogTemp, Warning, TEXT("%f : No Aim solution found"), Time);
-	}
-
-	//no solution found
+	UpdateFiringState();
 }
 
 void UTankAimingComponent::AimAtDirection(FVector Direction)
@@ -168,6 +107,7 @@ FVector UTankAimingComponent::GetBarrelLocation() const
 
 	return this->m_barrel->GetComponentLocation();
 }
+
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {

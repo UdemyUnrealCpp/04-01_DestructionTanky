@@ -25,7 +25,7 @@ void UTankMovementComponent::BeginPlay()
 	this->m_BoostGaugeNumberCurrent = m_BoostGaugeNumberMax;
 }
 
-void UTankMovementComponent::InputMoveDirection(float ForwardAxisValue, float RightAxisValue)
+void UTankMovementComponent::Move(float ForwardAxisValue, float RightAxisValue)
 {
 	//if (!ensure(HoverTrack)) { return; }
 
@@ -98,12 +98,12 @@ void UTankMovementComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	Move(DeltaTime);
+	UpdateMovement(DeltaTime);
 
 	UpdateBoost(DeltaTime);
 }
 
-void UTankMovementComponent::Move(float DeltaTime)
+void UTankMovementComponent::UpdateMovement(float DeltaTime)
 {
 	FVector Input = this->ConsumeInputVector();
 	//FVector Input = this->InputSaved;
