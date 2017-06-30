@@ -66,20 +66,20 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 	return DamageToApply;
 }
 
-void ATank::InitialiseMoveComp(UHoverTankTrack *HoverTrackToSet)
+void ATank::InitialiseMoveComp()
 {
 	if (!ensure(this->m_tankMovement))
 		return;
 
-	this->m_tankMovement->Initialise(HoverTrackToSet);
+	this->m_tankMovement->Initialise();
 }
 
-void ATank::InitialiseAimComp(UTankBarrel* barrelToSet, UTankTurret* turretToSet)
+void ATank::InitialiseAimComp(UTankBarrel* barrelToSet)
 {
 	if (!ensure(this->m_tankAiming))
 		return;
 
-	this->m_tankAiming->Initialise(barrelToSet, turretToSet);
+	this->m_tankAiming->Initialise(barrelToSet);
 }
 
 void ATank::LaunchBoost()

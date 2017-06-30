@@ -12,9 +12,13 @@ UTankMovementComponent::UTankMovementComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UTankMovementComponent::Initialise(UHoverTankTrack *HoverTrackToSet)
+void UTankMovementComponent::Initialise()
 {
-	//this->HoverTrack = HoverTrackToSet;
+	//nothing for the moment
+	this->BoostAccelerationCurrent = 0.0f;
+	this->AccelerationCurrent = this->AccelerationLimitMin;
+	this->m_BoostDurationCurrent = 0.0f;
+	this->m_BoostGaugeNumberCurrent = m_BoostGaugeNumberMax;
 }
 
 void UTankMovementComponent::BeginPlay()

@@ -29,7 +29,7 @@ class BATTLETANK_API UTankAimingComponent : public UActorComponent
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Setup")
-	void Initialise(UTankBarrel* barrelToSet, UTankTurret* turretToSet);
+	void Initialise(UTankBarrel* barrelToSet);
 
 	void AimAtDirection(FVector Direction);
 
@@ -47,7 +47,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Firing")
 	int32 GetAmmoReloadTimePercentage() const;
 
-	FVector GetTurretLocation() const;
 	FVector GetBarrelLocation() const;
 
 protected:
@@ -71,7 +70,6 @@ private:
 	UTankAimingComponent();
 
 	UTankBarrel* m_barrel = nullptr;
-	UTankTurret* m_turret = nullptr;
 
 	double m_lastFireTime = 0;	
 	FVector m_aimDirection;
@@ -80,7 +78,7 @@ private:
 	float m_ammoReloadTimeCurrentInSeconds;
 
 	void MoveBarrelTowards(FVector AimDirection);
-	void MoveTurretTowards(FVector AimDirection);
+	//void MoveTurretTowards(FVector AimDirection);
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 

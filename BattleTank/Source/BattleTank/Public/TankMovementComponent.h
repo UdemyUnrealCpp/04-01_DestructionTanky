@@ -19,7 +19,7 @@ public:
 	UTankMovementComponent();
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
-		void Initialise(UHoverTankTrack *HoverTrackToSet);
+		void Initialise();
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 		void Move(float ForwardAxisValue, float RightAxisValue);

@@ -16,10 +16,9 @@ UTankAimingComponent::UTankAimingComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UTankAimingComponent::Initialise(UTankBarrel* barrelToSet, UTankTurret* turretToSet)
+void UTankAimingComponent::Initialise(UTankBarrel* barrelToSet)
 {
 	this->m_barrel = barrelToSet;
-	this->m_turret = turretToSet;
 
 	m_iNumberAmmoLeft = m_iNumberAmmoMax;
 }
@@ -45,7 +44,7 @@ void UTankAimingComponent::AimAtDirection(FVector Direction)
 
 	m_aimDirection = Direction;
 	MoveBarrelTowards(m_aimDirection);
-	MoveTurretTowards(m_aimDirection);
+	//MoveTurretTowards(m_aimDirection);
 }
 
 void UTankAimingComponent::Fire()
@@ -94,13 +93,6 @@ int32 UTankAimingComponent::GetAmmoReloadTimePercentage() const
 	return Percentage * 100.0f;
 }
 
-FVector UTankAimingComponent::GetTurretLocation() const
-{
-	if (!this->m_turret) { return FVector::ZeroVector; }
-
-	return this->m_turret->GetComponentLocation();
-}
-
 FVector UTankAimingComponent::GetBarrelLocation() const
 {
 	if (!this->m_barrel) { return FVector::ZeroVector; }
@@ -137,71 +129,70 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	this->m_barrel->Elevate(DeltaRotator);*/
 }
 
-void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
-{
-	if (!ensure(m_turret))
-		return;
-	
-	//UE_LOG(LogTemp, Warning, TEXT("AimDirection : %s"), *AimDirection.ToString());
 
-	FRotator AimAsRotator = AimDirection.Rotation();
-	float RotationYaw = AimAsRotator.Yaw;
-
-	FVector Tankroot = this->GetOwner()->GetActorForwardVector();
-	FRotator Tankrootrotation = Tankroot.Rotation();
-	//UE_LOG(LogTemp, Warning, TEXT("Yaw : %f ___ %f"), RotationYaw, Tankrootrotation.Yaw);
-
-
-	RotationYaw = RotationYaw;
-    this->m_turret->SetRotationYaw(RotationYaw - Tankrootrotation.Yaw);
-	//this->GetOwner()->SetActorRelativeRotation(FRotator(0, RotationYaw, 0));
-	
-	
-	
-	//USE RELATIVE SPEED
-
-	//work out difference between current turret rotation and aimdirection
-	/*
-	FRotator TurretRotator = this->m_turret->GetForwardVector().Rotation();
-	FRotator AimAsRotator = AimDirection.Rotation();
-	FRotator DeltaRotator = AimAsRotator - TurretRotator;
-	*/
-	
-	//SOLUTION 1
-	/*
-	//in positive if the delta yaw is more than 180, we need to go to the opposite
-	//exemple go from 0 to 200 -> long range but the shortest is 0 to -140
-	//use -360 to go to the opposite
-	if (DeltaRotator.Yaw > 180.0f)
-	{
-		DeltaRotator.Yaw = DeltaRotator.Yaw - 360.0f;
-	}
-	//exemple go from 0 to -200 -> long range but the shortest is 0 to 140
-	//use +360 to go to the opposite
-	else if (DeltaRotator.Yaw < -180.0f)
-	{
-		DeltaRotator.Yaw = DeltaRotator.Yaw + 360.0f;
-	}
-	this->m_turret->Rotate(DeltaRotator.Yaw);
-	*/
-
-	/*
-	//SOLUTION 2
-	//180.0f is the middle if the delta is less than the middle
-	//Keep the direction
-	if (FMath::Abs(DeltaRotator.Yaw) < 180.0f)
-	{
-		this->m_turret->Rotate(DeltaRotator.Yaw);
-	}
-	else
-	//180.0f is the middle if the delta is more than the middle
-	//the short angle is the opposite (use -1)
-	{
-		this->m_turret->Rotate(-DeltaRotator.Yaw);
-	}*/
-
-	
-}
+//void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
+//{
+//	if (!ensure(m_turret))
+//		return;
+//	
+//	//UE_LOG(LogTemp, Warning, TEXT("AimDirection : %s"), *AimDirection.ToString());
+//
+//	FRotator AimAsRotator = AimDirection.Rotation();
+//	float RotationYaw = AimAsRotator.Yaw;
+//
+//	FVector Tankroot = this->GetOwner()->GetActorForwardVector();
+//	FRotator Tankrootrotation = Tankroot.Rotation();
+//	//UE_LOG(LogTemp, Warning, TEXT("Yaw : %f ___ %f"), RotationYaw, Tankrootrotation.Yaw);
+//
+//
+//	RotationYaw = RotationYaw;
+//    this->m_turret->SetRotationYaw(RotationYaw - Tankrootrotation.Yaw);
+//	//this->GetOwner()->SetActorRelativeRotation(FRotator(0, RotationYaw, 0));
+//	
+//	
+//	
+//	//USE RELATIVE SPEED
+//
+//	//work out difference between current turret rotation and aimdirection
+//	/*
+//	FRotator TurretRotator = this->m_turret->GetForwardVector().Rotation();
+//	FRotator AimAsRotator = AimDirection.Rotation();
+//	FRotator DeltaRotator = AimAsRotator - TurretRotator;
+//	*/
+//	
+//	//SOLUTION 1
+//	/*
+//	//in positive if the delta yaw is more than 180, we need to go to the opposite
+//	//exemple go from 0 to 200 -> long range but the shortest is 0 to -140
+//	//use -360 to go to the opposite
+//	if (DeltaRotator.Yaw > 180.0f)
+//	{
+//		DeltaRotator.Yaw = DeltaRotator.Yaw - 360.0f;
+//	}
+//	//exemple go from 0 to -200 -> long range but the shortest is 0 to 140
+//	//use +360 to go to the opposite
+//	else if (DeltaRotator.Yaw < -180.0f)
+//	{
+//		DeltaRotator.Yaw = DeltaRotator.Yaw + 360.0f;
+//	}
+//	this->m_turret->Rotate(DeltaRotator.Yaw);
+//	*/
+//
+//	/*
+//	//SOLUTION 2
+//	//180.0f is the middle if the delta is less than the middle
+//	//Keep the direction
+//	if (FMath::Abs(DeltaRotator.Yaw) < 180.0f)
+//	{
+//		this->m_turret->Rotate(DeltaRotator.Yaw);
+//	}
+//	else
+//	//180.0f is the middle if the delta is more than the middle
+//	//the short angle is the opposite (use -1)
+//	{
+//		this->m_turret->Rotate(-DeltaRotator.Yaw);
+//	}*/	
+//}
 
 bool UTankAimingComponent::IsBarrelMoving()
 {

@@ -17,10 +17,10 @@ class BATTLETANK_API ATank : public APawn
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
-		void InitialiseMoveComp(UHoverTankTrack *HoverTrackToSet);
+		void InitialiseMoveComp();
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
-		void InitialiseAimComp(UTankBarrel* barrelToSet, UTankTurret* turretToSet);
+		void InitialiseAimComp(UTankBarrel* barrelToSet);
 
 		void LaunchBoost();
 		void Fire();
