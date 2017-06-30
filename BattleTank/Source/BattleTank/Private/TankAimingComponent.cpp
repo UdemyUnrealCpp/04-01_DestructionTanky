@@ -97,7 +97,8 @@ FVector UTankAimingComponent::GetBarrelLocation() const
 {
 	if (!this->m_barrel) { return FVector::ZeroVector; }
 
-	return this->m_barrel->GetComponentLocation();
+	//return this->m_barrel->GetComponentLocation();
+	return this->m_barrel->GetSocketLocation(FName("BarrelStart"));
 }
 
 
@@ -108,11 +109,12 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 	FRotator AimAsRotator = AimDirection.Rotation();
 	this->m_barrel->SetRotationPitch(AimAsRotator.Pitch);
+	FVector StartLocation = this->m_barrel->GetSocketLocation(FName("BarrelStart"));
 
 	DrawDebugLine(
 		GetWorld(),
-		this->m_barrel->GetComponentLocation(),
-		this->m_barrel->GetComponentLocation() + AimDirection * 10000000.0f,
+		StartLocation,
+		StartLocation + AimDirection * 10000000.0f,
 		FColor(255, 0, 0),
 		false, -1, 0,
 		12.333
@@ -235,9 +237,4 @@ void UTankAimingComponent::UpdateAmmo(float DeltaTime)
 			this->m_ammoReloadTimeCurrentInSeconds = 0.0f;
 		}
 	}
-}
-
-void UTankAimingComponent::Test()
-{
-	
 }

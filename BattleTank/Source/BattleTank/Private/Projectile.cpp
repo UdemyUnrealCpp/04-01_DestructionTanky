@@ -108,7 +108,7 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 
 void AProjectile::OnTimerExpire()
 {
-	this->Destroy();
+	//this->Destroy();
 }
 
 

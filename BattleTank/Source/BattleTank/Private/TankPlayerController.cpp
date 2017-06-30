@@ -12,23 +12,50 @@ void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	m_tankControlled = Cast<ATank>(this->GetPawn());
+	/*m_tankControlled = Cast<ATank>(this->GetPawn());
 
-	if (!ensure(m_tankControlled)) { return; }
+	if (!ensure(m_tankControlled)) { return; }*/
 		
 	InitPlayerUIWidget(m_tankControlled);
+
+	this->m_bIsInitialized = false;
 }
 
 
 void ATankPlayerController::Tick(float fDeltaTime)
 {
 	Super::Tick(fDeltaTime);
-    AimTowardsCrosshair();
+
+	if (!this->m_bIsInitialized)
+	{
+		CheckInitialization();
+	}
+	else
+	{
+		AimTowardsCrosshair();
+	}
+    
+}
+
+void ATankPlayerController::CheckInitialization()
+{
+	this->m_bIsInitialized = false;
+
+	m_tankControlled = Cast<ATank>(this->GetPawn());
+	if (m_tankControlled != nullptr)
+	{
+		this->m_bIsInitialized = true;
+	}	
 }
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
+	if (!this->m_bIsInitialized)
+		return;
+
 	if (!GetPawn()) { return; } //if not possessing
+
+	if (!ensure(this->m_tankControlled)) { return; }
 
 	UTankAimingComponent* AimComp = this->m_tankControlled->GetTankAimingComponent();
 	if (!ensure(AimComp)) { return; }
@@ -117,6 +144,7 @@ void ATankPlayerController::SetPawn(APawn * InPawn)
 
 	if (InPawn)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("SetPawn %s"), *InPawn->GetName());
 		ATank* PossessedTank = Cast<ATank>(InPawn);
 
 		if (!ensure(PossessedTank)) { return; }
@@ -132,6 +160,9 @@ void ATankPlayerController::OnPossessedTankDeath()
 
 void ATankPlayerController::InputBoost()
 {
+	if (!this->m_bIsInitialized)
+		return;
+
 	if (!ensure(this->m_tankControlled))
 		return;
 
@@ -140,6 +171,9 @@ void ATankPlayerController::InputBoost()
 
 void ATankPlayerController::InputFire()
 {
+	if (!this->m_bIsInitialized)
+		return;
+
 	if (!ensure(this->m_tankControlled))
 		return;
 
@@ -148,6 +182,9 @@ void ATankPlayerController::InputFire()
 
 void ATankPlayerController::InputMove(float ForwardAxisValue, float RightAxisValue)
 {
+	if (!this->m_bIsInitialized)
+		return;
+
 	if (!ensure(this->m_tankControlled))
 		return;
 

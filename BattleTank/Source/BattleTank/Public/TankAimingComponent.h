@@ -89,7 +89,4 @@ private:
 	void UpdateAmmo(float DeltaTime);
 
 	bool IsBarrelMoving();
-
-	void Test();
-
 };

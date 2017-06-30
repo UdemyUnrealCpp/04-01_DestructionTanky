@@ -186,13 +186,13 @@ void UTankMovementComponent::UpdateMovement(float DeltaTime)
 		SinValue = FMath::Clamp(SinValue, 0.0f, m_BoostValueClampedMax);
 		BoostAccelerationCurrent = SinValue;
 
-		UE_LOG(LogTemp, Warning, TEXT("BOOST Dur %f __ SIN %f __ SPEED %f"), m_BoostDurationCurrent, SinValue, BoostAccelerationCurrent);
+		//UE_LOG(LogTemp, Warning, TEXT("BOOST Dur %f __ SIN %f __ SPEED %f"), m_BoostDurationCurrent, SinValue, BoostAccelerationCurrent);
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("A %f __ BA %f __ D %f"), this->AccelerationCurrent, this->BoostAccelerationCurrent, BoostDurationCurrent);
 	
 	FVector NewSpeedVector = InputForceApplied * this->GetSpeedCurrent();
-	UE_LOG(LogTemp, Warning, TEXT("speed = %s "), *NewSpeedVector.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("speed = %s "), *NewSpeedVector.ToString());
 
 	this->MoveUpdatedComponent(NewSpeedVector * DeltaTime, this->GetOwner()->GetActorRotation(), true);
 	this->UpdateComponentVelocity();

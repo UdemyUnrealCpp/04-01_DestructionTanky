@@ -46,6 +46,8 @@ private:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float fDeltaTime) override;	
+	void CheckInitialization();
+
 
 	//Start the tank moving the barrel so that a shot would hit where
 	//the crosshair intersects the world
@@ -66,4 +68,6 @@ private:
 		void OnPossessedTankDeath();
 
 	ATank* m_tankControlled;
+
+	bool m_bIsInitialized;
 };

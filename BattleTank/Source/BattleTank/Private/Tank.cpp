@@ -24,6 +24,18 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TArray<UTankMovementComponent*> MoveComps;
+	TArray<UTankAimingComponent*> AimingComps;
+
+	this->GetComponents(MoveComps);
+	this->GetComponents(AimingComps);
+
+	if(this->m_tankMovement == nullptr)
+		UE_LOG(LogTemp, Warning, TEXT("ERROR"));
+
+	this->m_tankMovement = MoveComps[0];
+	this->m_tankAiming = AimingComps[0];
+
 	m_currentHealth = m_startingHealth;
 }
 
@@ -113,10 +125,14 @@ float ATank::GetHealthPercent() const
 
 UTankMovementComponent* ATank::GetTankMovementComponent() const
 {
+	if (!ensure(m_tankMovement)) { return nullptr; }
+
 	return this->m_tankMovement;
 }
 
 UTankAimingComponent* ATank::GetTankAimingComponent() const
 {
+	if (!ensure(m_tankAiming)) { return nullptr; }
+
 	return this->m_tankAiming;
 }
