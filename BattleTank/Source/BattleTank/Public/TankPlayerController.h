@@ -63,6 +63,7 @@ private:
 	int32 LineTraceRangeCentimeters = 1000000;
 
 	virtual void SetPawn(APawn *InPawn) override;
+	void Init();
 
 	UFUNCTION()
 		void OnPossessedTankDeath();

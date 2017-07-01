@@ -14,9 +14,9 @@ void ATankPlayerController::BeginPlay()
 
 	/*m_tankControlled = Cast<ATank>(this->GetPawn());
 
-	if (!ensure(m_tankControlled)) { return; }*/
-		
-	InitPlayerUIWidget(m_tankControlled);
+	if (!ensure(m_tankControlled)) { return; }*/	
+	
+
 
 	this->m_bIsInitialized = false;
 }
@@ -40,11 +40,10 @@ void ATankPlayerController::Tick(float fDeltaTime)
 void ATankPlayerController::CheckInitialization()
 {
 	this->m_bIsInitialized = false;
-
-	m_tankControlled = Cast<ATank>(this->GetPawn());
+	
 	if (m_tankControlled != nullptr)
 	{
-		this->m_bIsInitialized = true;
+		Init();		
 	}	
 }
 
@@ -71,8 +70,34 @@ bool ATankPlayerController::GetSightRayHitDirection(FVector &outHitDirection) co
 	//find crosshair position in pixel coordinate
 	int32 iViewportSizeX, iViewportSizeY;
 	GetViewportSize(iViewportSizeX, iViewportSizeY);
-	FVector2D ScreenLocation = FVector2D(iViewportSizeX * this->CrosshairXLocation, iViewportSizeY * this->CrosshairYLocation);
 
+	UGameViewportClient* Viewport = GetWorld()->GetGameViewport();
+	FSplitscreenData SplitData = Viewport->SplitscreenInfo[Viewport->GetCurrentSplitscreenConfiguration()];
+	float PercentageX = SplitData.PlayerData[this->NetPlayerIndex].SizeX;
+	float PercentageY = SplitData.PlayerData[this->NetPlayerIndex].SizeY;
+
+	float screenStartX = SplitData.PlayerData[this->NetPlayerIndex].OriginX * iViewportSizeX;
+	float screenStartY = SplitData.PlayerData[this->NetPlayerIndex].OriginY * iViewportSizeY;
+
+	float screenSizeX = SplitData.PlayerData[this->NetPlayerIndex].SizeX * iViewportSizeX;
+	float screenSizeY = SplitData.PlayerData[this->NetPlayerIndex].SizeY * iViewportSizeY;
+
+
+
+	
+	UE_LOG(LogTemp, Warning, TEXT("Viewport : %d %d"), iViewportSizeX, iViewportSizeY);
+
+	FVector2D ScreenLocation = FVector2D(iViewportSizeX * this->CrosshairXLocation, iViewportSizeY * this->CrosshairYLocation);
+	ScreenLocation = FVector2D(screenStartX + (this->CrosshairXLocation * screenSizeX), screenStartY + (this->CrosshairYLocation * screenSizeY));
+	//FIntPoint test = GetLocalPlayer()->ViewportClient->Viewport->GetSizeXY();
+	//APlayerState *state = GetSplitscreenPlayerByIndex(this->NetPlayerIndex);
+	//UE_LOG(LogTemp, Warning, TEXT("Screen1 : %d"), state->);
+
+	
+	
+
+		//UE_LOG(LogTemp, Warning, TEXT("Screen1 : %f"), );
+		UE_LOG(LogTemp, Warning, TEXT("Screen1 : %f"), SplitData.PlayerData[this->NetPlayerIndex].OriginX);
 	//deproject the screen position of the crosshair to a world direction
 	FVector LookDirection;
 	if (GetLookDirection(ScreenLocation, LookDirection))
@@ -148,7 +173,9 @@ void ATankPlayerController::SetPawn(APawn * InPawn)
 		ATank* PossessedTank = Cast<ATank>(InPawn);
 
 		if (!ensure(PossessedTank)) { return; }
-
+		//a pawn is given to the player
+		//keep a ref
+		m_tankControlled = Cast<ATank>(this->GetPawn());
 		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankPlayerController::OnPossessedTankDeath);
 	}
 }
@@ -189,6 +216,13 @@ void ATankPlayerController::InputMove(float ForwardAxisValue, float RightAxisVal
 		return;
 
 	this->m_tankControlled->Move(ForwardAxisValue, RightAxisValue);
+}
+
+void ATankPlayerController::Init()
+{
+	InitPlayerUIWidget(m_tankControlled);
+
+	this->m_bIsInitialized = true;
 }
 
 
