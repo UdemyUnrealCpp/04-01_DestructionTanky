@@ -15,7 +15,8 @@ void ATankPlayerController::BeginPlay()
 	/*m_tankControlled = Cast<ATank>(this->GetPawn());
 
 	if (!ensure(m_tankControlled)) { return; }*/	
-	
+
+	//this->InitSplitScreenData();
 
 
 	this->m_bIsInitialized = false;
@@ -44,6 +45,7 @@ void ATankPlayerController::CheckInitialization()
 	if (m_tankControlled != nullptr)
 	{
 		Init();		
+		InitSplitScreenData();		
 	}	
 }
 
@@ -67,37 +69,15 @@ void ATankPlayerController::AimTowardsCrosshair()
 
 bool ATankPlayerController::GetSightRayHitDirection(FVector &outHitDirection) const
 {
-	//find crosshair position in pixel coordinate
+	
+
+	//get screen size
 	int32 iViewportSizeX, iViewportSizeY;
 	GetViewportSize(iViewportSizeX, iViewportSizeY);
 
-	UGameViewportClient* Viewport = GetWorld()->GetGameViewport();
-	FSplitscreenData SplitData = Viewport->SplitscreenInfo[Viewport->GetCurrentSplitscreenConfiguration()];
-	float PercentageX = SplitData.PlayerData[this->NetPlayerIndex].SizeX;
-	float PercentageY = SplitData.PlayerData[this->NetPlayerIndex].SizeY;
+	//find crosshair position in pixel coordinate
+	FVector2D ScreenLocation = FVector2D(m_splitscreenOrigin.X + (this->CrosshairXLocation * m_splitscreenSize.X), m_splitscreenOrigin.Y + (this->CrosshairYLocation * m_splitscreenSize.Y));
 
-	float screenStartX = SplitData.PlayerData[this->NetPlayerIndex].OriginX * iViewportSizeX;
-	float screenStartY = SplitData.PlayerData[this->NetPlayerIndex].OriginY * iViewportSizeY;
-
-	float screenSizeX = SplitData.PlayerData[this->NetPlayerIndex].SizeX * iViewportSizeX;
-	float screenSizeY = SplitData.PlayerData[this->NetPlayerIndex].SizeY * iViewportSizeY;
-
-
-
-	
-	UE_LOG(LogTemp, Warning, TEXT("Viewport : %d %d"), iViewportSizeX, iViewportSizeY);
-
-	FVector2D ScreenLocation = FVector2D(iViewportSizeX * this->CrosshairXLocation, iViewportSizeY * this->CrosshairYLocation);
-	ScreenLocation = FVector2D(screenStartX + (this->CrosshairXLocation * screenSizeX), screenStartY + (this->CrosshairYLocation * screenSizeY));
-	//FIntPoint test = GetLocalPlayer()->ViewportClient->Viewport->GetSizeXY();
-	//APlayerState *state = GetSplitscreenPlayerByIndex(this->NetPlayerIndex);
-	//UE_LOG(LogTemp, Warning, TEXT("Screen1 : %d"), state->);
-
-	
-	
-
-		//UE_LOG(LogTemp, Warning, TEXT("Screen1 : %f"), );
-		UE_LOG(LogTemp, Warning, TEXT("Screen1 : %f"), SplitData.PlayerData[this->NetPlayerIndex].OriginX);
 	//deproject the screen position of the crosshair to a world direction
 	FVector LookDirection;
 	if (GetLookDirection(ScreenLocation, LookDirection))
@@ -175,7 +155,7 @@ void ATankPlayerController::SetPawn(APawn * InPawn)
 		if (!ensure(PossessedTank)) { return; }
 		//a pawn is given to the player
 		//keep a ref
-		m_tankControlled = Cast<ATank>(this->GetPawn());
+		m_tankControlled = PossessedTank;
 		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankPlayerController::OnPossessedTankDeath);
 	}
 }
@@ -225,6 +205,30 @@ void ATankPlayerController::Init()
 	this->m_bIsInitialized = true;
 }
 
+
+void ATankPlayerController::InitSplitScreenData()
+{
+	//get screen complete size
+	int32 iViewportSizeX, iViewportSizeY;
+	GetViewportSize(iViewportSizeX, iViewportSizeY);
+
+	//get viewport
+	UGameViewportClient* Viewport = GetWorld()->GetGameViewport();
+	//get all splitdata
+	FSplitscreenData SplitData = Viewport->SplitscreenInfo[Viewport->GetCurrentSplitscreenConfiguration()];
+	//the player index for multiplayer
+	int PlayerIndex = this->NetPlayerIndex;
+
+	//calculate origin of the splitscreen for the player
+	m_splitscreenOrigin = FVector2D(SplitData.PlayerData[PlayerIndex].OriginX * iViewportSizeX, SplitData.PlayerData[PlayerIndex].OriginY * iViewportSizeY);
+	//calculate size of the splitscreen for the player
+	m_splitscreenSize = FVector2D(SplitData.PlayerData[PlayerIndex].SizeX * iViewportSizeX, SplitData.PlayerData[PlayerIndex].SizeY * iViewportSizeY);
+
+	//FVector2D test = FVector2D::ZeroVector;
+	//Viewport->GetViewportSize(test);
+	//UE_LOG(LogTemp, Warning, TEXT("VP 1 : %s"), *test.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("VP Final : O_ %s   S_ %s"), *m_splitscreenOrigin.ToString(), *m_splitscreenSize.ToString());
+}
 
 
 

@@ -64,6 +64,7 @@ private:
 
 	virtual void SetPawn(APawn *InPawn) override;
 	void Init();
+	void InitSplitScreenData();
 
 	UFUNCTION()
 		void OnPossessedTankDeath();
@@ -71,4 +72,7 @@ private:
 	ATank* m_tankControlled;
 
 	bool m_bIsInitialized;
+
+	FVector2D m_splitscreenOrigin;
+	FVector2D m_splitscreenSize;
 };
