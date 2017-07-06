@@ -15,5 +15,6 @@ class BATTLETANK_API ABattleTankGameModeBase : public AGameModeBase
 	
 	
 	
-	
+		UPROPERTY(EditDefaultsOnly)
+		float HeightElevation = 250.0f;
 };
