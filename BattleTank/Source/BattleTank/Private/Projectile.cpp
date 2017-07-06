@@ -52,7 +52,7 @@ void AProjectile::LaunchProjectile(float Speed)
 	this->m_projectileMovement->Activate();
 }
 
-void AProjectile::LaunchProjectile(FVector Direction,float Speed, AActor* Owner)
+void AProjectile::LaunchProjectile(FVector Direction,float Speed)
 {
 	UE_LOG(LogTemp, Warning, TEXT("LAUNCH __ %s __ S = %f"), *Direction.ToString(), Speed);
 	//this->SetActorRotation(Direction.Rotation());
@@ -86,14 +86,22 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 	this->SetRootComponent(this->m_impactBlast);
 	this->m_collisionComp->DestroyComponent();
+	this->m_meshComp->DestroyComponent();
+
+	
+	float fDistance = FVector::Distance(OtherComp->GetOwner()->GetActorLocation(), Hit.ImpactPoint);
+	float fRadialDamage = FMath::Lerp<float>(this->m_projectileDamage, 0, fDistance / this->m_explosionForce->Radius);
+	UE_LOG(LogTemp, Warning, TEXT("location %s __ %s"), *OtherComp->GetOwner()->GetActorLocation().ToString(), *Hit.ImpactPoint.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("lerp %f __ %f __ %f"), 0.0f, this->m_projectileDamage, fDistance / this->m_explosionForce->Radius);
+	UE_LOG(LogTemp, Warning, TEXT("distance %f __ %f __ %f"), fDistance, fRadialDamage, this->m_explosionForce->Radius);
 
 	UGameplayStatics::ApplyRadialDamage(
 		this,
-		this->m_projectileDamage,
+		fRadialDamage,
 		this->GetActorLocation(),
 		this->m_explosionForce->Radius, //for consistancy
 		UDamageType::StaticClass(),
-		TArray<AActor*>() //damage all actors
+		TArray<AActor*>()//damage all actors
 	);
 
 
@@ -108,7 +116,7 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 
 void AProjectile::OnTimerExpire()
 {
-	//this->Destroy();
+	this->Destroy();
 }
 
 

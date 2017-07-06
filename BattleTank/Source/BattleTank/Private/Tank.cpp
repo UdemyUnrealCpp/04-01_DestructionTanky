@@ -74,7 +74,20 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 		OnDeath.Broadcast();
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("%s had %f healt but take %i / %f damage = %i"), *TankName, m_lastHealth, DamageToApply, DamageAmount, this->m_currentHealth);
+	if (EventInstigator != nullptr)
+	{
+		if (EventInstigator->GetPawn() != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("EventInstigator = %s"), *EventInstigator->GetPawn()->GetName());
+		}
+	}
+
+	if (DamageCauser != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DamageCauser = %s"), *DamageCauser->GetName());
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("%s had %f healt but take %i / %f damage = %i"), *TankName, m_lastHealth, DamageToApply, DamageAmount, this->m_currentHealth);
 	return DamageToApply;
 }
 

@@ -15,7 +15,7 @@ public:
 	AProjectile();
 
 	void LaunchProjectile(float Speed);
-	void LaunchProjectile(FVector Direction, float Speed, AActor* Owner);
+	void LaunchProjectile(FVector Direction, float Speed);
 
 
 protected:
@@ -56,7 +56,4 @@ private:
 		float m_projectileDamage = 10.0f;
 
 	void OnTimerExpire();	
-
-	//AActor* m_Owner;
-	
 };

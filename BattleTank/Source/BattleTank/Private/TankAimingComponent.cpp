@@ -62,7 +62,7 @@ void UTankAimingComponent::Fire()
 		FRotator StartRotation = m_aimDirection.Rotation();
 		AProjectile* NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 		//NewProjectile->LaunchProjectile(this->m_launchSpeed);
-		NewProjectile->LaunchProjectile(m_aimDirection, this->m_launchSpeed, this->GetOwner());
+		NewProjectile->LaunchProjectile(m_aimDirection, this->m_launchSpeed);
 		//NewProjectile = this->GetWorld()->SpawnActor<AProjectile>(this->m_projectileBlueprint, StartLocation, StartRotation);
 
 		//m_lastFireTime = FPlatformTime::Seconds();
