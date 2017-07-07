@@ -42,6 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Boost")
 		int32 GetBoostGaugeReloadTimePercentage() const;
 
+	void AddEnvironmentalForce(FVector EnvironmentalForce);
+
 private:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
@@ -54,6 +56,8 @@ private:
 	void UpdateMovement(float DeltaTime);
 
 	void UpdateBoost(float DeltaTime);
+
+	void UpdateEnvironmentalForce(float DeltaTime);
 
 	//UHoverTankTrack *HoverTrack = nullptr;	
 	FVector MoveDirection;
@@ -97,5 +101,11 @@ private:
 		float m_BoostGaugeReloadTimeMax = 1.0f;
 	//in seconds
 	float m_BoostGaugeReloadTimeCurrent;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnvironmentalForce")
+		float m_EnvironmentalForceDecreaseValue = 10000.0f;
+
+	FVector m_EnvironmentalForce;
 
 };

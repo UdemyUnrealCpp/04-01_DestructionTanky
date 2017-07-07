@@ -57,7 +57,7 @@ void ATank::Tick(float DeltaSeconds)
 	Location.Z = this->HeightElevation;
 	this->SetActorLocation(Location);
 }
-
+/*
 float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
 {
 	FString TankName = this->GetName();
@@ -73,23 +73,10 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 		//UE_LOG(LogTemp, Warning, TEXT("%s tank died"), *TankName);
 		OnDeath.Broadcast();
 	}
-
-	if (EventInstigator != nullptr)
-	{
-		if (EventInstigator->GetPawn() != nullptr)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("EventInstigator = %s"), *EventInstigator->GetPawn()->GetName());
-		}
-	}
-
-	if (DamageCauser != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DamageCauser = %s"), *DamageCauser->GetName());
-	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("%s had %f healt but take %i / %f damage = %i"), *TankName, m_lastHealth, DamageToApply, DamageAmount, this->m_currentHealth);
 	return DamageToApply;
-}
+}*/
 
 void ATank::InitialiseMoveComp()
 {
@@ -135,6 +122,31 @@ float ATank::GetHealthPercent() const
 {
 	return (float)(this->m_currentHealth) / (float)(this->m_startingHealth);
 }
+
+void ATank::AddEnvironmentalForce(FVector EnvironmentalForce)
+{
+	this->m_tankMovement->AddEnvironmentalForce(EnvironmentalForce);
+}
+
+void ATank::AddDamage(float Damage)
+{
+	FString TankName = this->GetName();
+
+	int32 DamagePoints = FPlatformMath::RoundToInt(Damage);
+
+	int32 DamageToApply = FMath::Clamp<int32>(Damage, 0, this->m_currentHealth);
+	float m_lastHealth = this->m_currentHealth;
+
+	this->m_currentHealth -= DamageToApply;
+	if (this->m_currentHealth <= 0)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("%s tank died"), *TankName);
+		OnDeath.Broadcast();
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%s had %f healt but take %i / %f damage = %i"), *TankName, m_lastHealth, DamageToApply, Damage, this->m_currentHealth);
+}
+
 
 UTankMovementComponent* ATank::GetTankMovementComponent() const
 {

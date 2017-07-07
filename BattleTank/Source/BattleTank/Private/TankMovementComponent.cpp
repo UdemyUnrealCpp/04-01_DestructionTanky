@@ -97,6 +97,11 @@ int32 UTankMovementComponent::GetBoostGaugeReloadTimePercentage() const
 	return Percentage * 100.0f;
 }
 
+void UTankMovementComponent::AddEnvironmentalForce(FVector EnvironmentalForce)
+{
+	this->m_EnvironmentalForce += EnvironmentalForce;
+}
+
 void UTankMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 
@@ -105,6 +110,8 @@ void UTankMovementComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	UpdateMovement(DeltaTime);
 
 	UpdateBoost(DeltaTime);
+
+	UpdateEnvironmentalForce(DeltaTime);
 }
 
 void UTankMovementComponent::UpdateMovement(float DeltaTime)
@@ -191,7 +198,7 @@ void UTankMovementComponent::UpdateMovement(float DeltaTime)
 
 	//UE_LOG(LogTemp, Warning, TEXT("A %f __ BA %f __ D %f"), this->AccelerationCurrent, this->BoostAccelerationCurrent, BoostDurationCurrent);
 	
-	FVector NewSpeedVector = InputForceApplied * this->GetSpeedCurrent();
+	FVector NewSpeedVector = InputForceApplied * this->GetSpeedCurrent() + m_EnvironmentalForce;
 	//UE_LOG(LogTemp, Warning, TEXT("speed = %s "), *NewSpeedVector.ToString());
 
 	this->MoveUpdatedComponent(NewSpeedVector * DeltaTime, this->GetOwner()->GetActorRotation(), true);
@@ -210,6 +217,58 @@ void UTankMovementComponent::UpdateBoost(float DeltaTime)
 			this->m_BoostGaugeReloadTimeCurrent = 0.0f;
 		}
 	}
+}
+
+void UTankMovementComponent::UpdateEnvironmentalForce(float DeltaTime)
+{
+	if (this->m_EnvironmentalForce.SizeSquared() > 0.0f)
+	{
+		FVector NewEnvironmentalForce = this->m_EnvironmentalForce;
+
+		if (NewEnvironmentalForce.X > 0.0f)
+		{
+			NewEnvironmentalForce.X -= m_EnvironmentalForceDecreaseValue * DeltaTime;
+
+			if (NewEnvironmentalForce.X <= 0.0f)
+			{
+				NewEnvironmentalForce.X = 0.0f;
+			}
+		}
+		else if (NewEnvironmentalForce.X < 0.0f)
+		{
+			NewEnvironmentalForce.X += m_EnvironmentalForceDecreaseValue * DeltaTime;
+
+			if (NewEnvironmentalForce.X >= 0.0f)
+			{
+				NewEnvironmentalForce.X = 0.0f;
+			}
+		}
+
+		if (NewEnvironmentalForce.Y > 0.0f)
+		{
+			NewEnvironmentalForce.Y -= m_EnvironmentalForceDecreaseValue * DeltaTime;
+
+			if (NewEnvironmentalForce.Y <= 0.0f)
+			{
+				NewEnvironmentalForce.Y = 0.0f;
+			}
+		}
+		else if (NewEnvironmentalForce.Y < 0.0f)
+		{
+			NewEnvironmentalForce.Y += m_EnvironmentalForceDecreaseValue * DeltaTime;
+
+			if (NewEnvironmentalForce.Y >= 0.0f)
+			{
+				NewEnvironmentalForce.Y = 0.0f;
+			}
+		}
+
+		NewEnvironmentalForce.Z = 0.0f;
+
+		this->m_EnvironmentalForce = NewEnvironmentalForce;
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Env FORCE __ %s"), *this->m_EnvironmentalForce.ToString());
 }
 
 void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)

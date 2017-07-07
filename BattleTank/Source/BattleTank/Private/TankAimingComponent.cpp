@@ -19,7 +19,7 @@ UTankAimingComponent::UTankAimingComponent()
 void UTankAimingComponent::Initialise(UTankBarrel* barrelToSet)
 {
 	this->m_barrel = barrelToSet;
-
+	m_iNumberAmmoMax = 99;
 	m_iNumberAmmoLeft = m_iNumberAmmoMax;
 }
 
@@ -35,6 +35,16 @@ void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickTy
 	UpdateAmmo(DeltaTime);
 
 	UpdateFiringState();
+
+	/*if (Delay <= 0.0)
+	{
+		Fire();
+		Delay = 1.0f;
+	}
+	else
+	{
+		Delay -= DeltaTime;
+	}*/
 }
 
 void UTankAimingComponent::AimAtDirection(FVector Direction)
@@ -101,7 +111,6 @@ FVector UTankAimingComponent::GetBarrelLocation() const
 	return this->m_barrel->GetSocketLocation(FName("BarrelStart"));
 }
 
-
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
 	if (!ensure(m_barrel))
@@ -118,7 +127,29 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 		FColor(255, 0, 0),
 		false, -1, 0,
 		12.333
-	);
+	);	
+
+
+	FHitResult HitResult;
+	FVector StartTrace = StartLocation;
+	FVector EndTrace = StartLocation + AimDirection * 10000000.0f;
+	FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams(FName(TEXT("Trace")), false, this->GetOwner());
+
+	if (this->GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_Visibility, CollisionQueryParams))
+	{
+		if (HitResult.GetActor() != nullptr)
+		{
+			FVector SphereCenter = HitResult.ImpactPoint;
+
+			DrawDebugSphere(
+				GetWorld(),
+				SphereCenter,
+				48,
+				32,
+				FColor(0, 255, 0)
+			);
+		}
+	}
 
 	/*
 	//work out difference between current barrel rotation and aimdirection
@@ -129,6 +160,8 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	FRotator DeltaRotator = AimAsRotator - BarrelRotator;	
 
 	this->m_barrel->Elevate(DeltaRotator);*/
+
+
 }
 
 

@@ -56,4 +56,6 @@ private:
 		float m_projectileDamage = 10.0f;
 
 	void OnTimerExpire();	
+
+	void ApplyExplosionForceOnTanks();
 };

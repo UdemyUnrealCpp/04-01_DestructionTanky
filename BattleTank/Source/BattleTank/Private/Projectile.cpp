@@ -1,6 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
+
+#include "BattleTankGameModeBase.h"
+#include "Tank.h"
+
 #include "Projectile.h"
 
 
@@ -88,8 +92,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	this->m_collisionComp->DestroyComponent();
 	this->m_meshComp->DestroyComponent();
 
+	ApplyExplosionForceOnTanks();
 	
-	float fDistance = FVector::Distance(OtherComp->GetOwner()->GetActorLocation(), Hit.ImpactPoint);
+	
+
+
+	/*float fDistance = FVector::Distance(OtherComp->GetOwner()->GetActorLocation(), Hit.ImpactPoint);
 	float fRadialDamage = FMath::Lerp<float>(this->m_projectileDamage, 0, fDistance / this->m_explosionForce->Radius);
 	UE_LOG(LogTemp, Warning, TEXT("location %s __ %s"), *OtherComp->GetOwner()->GetActorLocation().ToString(), *Hit.ImpactPoint.ToString());
 	UE_LOG(LogTemp, Warning, TEXT("lerp %f __ %f __ %f"), 0.0f, this->m_projectileDamage, fDistance / this->m_explosionForce->Radius);
@@ -102,7 +110,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		this->m_explosionForce->Radius, //for consistancy
 		UDamageType::StaticClass(),
 		TArray<AActor*>()//damage all actors
-	);
+	);*/
 
 
 	FTimerHandle TimerHandle;
@@ -119,4 +127,34 @@ void AProjectile::OnTimerExpire()
 	this->Destroy();
 }
 
+void AProjectile::ApplyExplosionForceOnTanks()
+{
+	ABattleTankGameModeBase* BattleTankGameMode = Cast<ABattleTankGameModeBase>(this->GetWorld()->GetAuthGameMode());
+	TArray<APawn*> PawnsControlledByPlayers = BattleTankGameMode->GetPawnsControlledByPlayers();
+
+	UE_LOG(LogTemp, Warning, TEXT("NB Tank %d"), PawnsControlledByPlayers.Num());
+
+	float ExplosionRadius = this->m_explosionForce->Radius;
+
+	for (int i = 0; i < PawnsControlledByPlayers.Num(); ++i)
+	{
+		FVector TankLocation = PawnsControlledByPlayers[i]->GetActorLocation();
+		FVector ProjectileLocation = this->GetActorLocation();
+		float DistanceProjectileToTank = FVector::Distance(TankLocation, ProjectileLocation);
+
+		if (DistanceProjectileToTank <= ExplosionRadius)
+		{
+			float ForceExplosionByDistance = FMath::Lerp<float>(1.0f, 0.0f, DistanceProjectileToTank / ExplosionRadius);
+
+			FVector ForceDirection = (TankLocation - ProjectileLocation).GetSafeNormal();
+			ForceDirection.Z = 0.0f;
+			UE_LOG(LogTemp, Warning, TEXT("ForceExplosion %f __ ForceDir %s"), ForceExplosionByDistance, *ForceDirection.ToString());
+
+			ATank* Tank = Cast<ATank>(PawnsControlledByPlayers[i]);
+			Tank->AddEnvironmentalForce(ForceDirection * ForceExplosionByDistance * this->m_explosionForce->ImpulseStrength);
+			Tank->AddDamage(this->m_projectileDamage * ForceExplosionByDistance);
+
+		}
+	}
+}
 

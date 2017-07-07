@@ -29,7 +29,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 		float GetHealthPercent() const;
 
+	void AddEnvironmentalForce(FVector EnvironmentalForce);
 
+	void AddDamage(float Damage);
 
 	FTankDelegate OnDeath;
 	
@@ -42,7 +44,7 @@ private:
 	// Sets default values for this pawn's properties
 	ATank();
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser) override;
+	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser) override;
 	
 	virtual void BeginPlay() override;	
 
