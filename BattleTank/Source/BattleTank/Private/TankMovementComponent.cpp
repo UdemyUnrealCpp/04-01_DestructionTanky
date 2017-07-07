@@ -27,6 +27,7 @@ void UTankMovementComponent::BeginPlay()
 	this->AccelerationCurrent = this->AccelerationLimitMin;
 	this->m_BoostDurationCurrent = 0.0f;
 	this->m_BoostGaugeNumberCurrent = m_BoostGaugeNumberMax;
+	this->m_EnvironmentalForceBoostCounterAttackCurrent = this->m_EnvironmentalForceBoostCounterAttackMin;
 }
 
 void UTankMovementComponent::Move(float ForwardAxisValue, float RightAxisValue)
@@ -60,8 +61,63 @@ void UTankMovementComponent::InputBoost(float AxisValue)
 
 void UTankMovementComponent::LaunchBoost()
 {
-	if (this->InputSaved.SizeSquared() <= 0.0f || this->m_BoostGaugeNumberCurrent == 0)
+	float MovementVectorSpeedSizeSquared = this->m_EnvironmentalForce.SizeSquared();
+
+	if (this->m_BoostGaugeNumberCurrent <= 0)
+		return;	
+
+	if (this->InputSaved.SizeSquared() <= 0.0f && MovementVectorSpeedSizeSquared <= 0.0f)
 		return;
+
+	/*
+	if (MovementVectorSpeedSizeSquared > 0.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("1 speed = %s "), *this->m_EnvironmentalForce.ToString());
+
+
+		FVector Dir = this->m_EnvironmentalForce.GetSafeNormal();
+		FVector NewForce;
+		NewForce = this->m_EnvironmentalForce + (Dir * -1.0f * m_BoostValueClampedMax);
+
+		if (Dir.X > 0.0f)
+		{
+			if (NewForce.X <= 0.0f)
+				NewForce.X = 0.0f;
+		}
+		else if (Dir.X < 0.0f)
+		{
+			if (NewForce.X >= 0.0f)
+				NewForce.X = 0.0f;
+		}
+
+		if (Dir.Y > 0.0f)
+		{
+			if (NewForce.Y <= 0.0f)
+				NewForce.Y = 0.0f;
+		}
+		else if (Dir.Y < 0.0f)
+		{
+			if (NewForce.Y >= 0.0f)
+				NewForce.Y = 0.0f;
+		}
+
+		if (Dir.Z > 0.0f)
+		{
+			if (NewForce.Z <= 0.0f)
+				NewForce.Z = 0.0f;
+		}
+		else if (Dir.Z < 0.0f)
+		{
+			if (NewForce.Z >= 0.0f)
+				NewForce.Z = 0.0f;
+		}
+
+		this->m_EnvironmentalForce = NewForce;
+
+
+		UE_LOG(LogTemp, Warning, TEXT("2 speed = %s "), *this->m_EnvironmentalForce.ToString());
+	}
+	*/
 
 	m_BoostDurationCurrent = m_BoostDurationMax;
 	--this->m_BoostGaugeNumberCurrent;
@@ -100,6 +156,13 @@ int32 UTankMovementComponent::GetBoostGaugeReloadTimePercentage() const
 void UTankMovementComponent::AddEnvironmentalForce(FVector EnvironmentalForce)
 {
 	this->m_EnvironmentalForce += EnvironmentalForce;
+
+	this->m_EnvironmentalForce.X = FMath::Clamp(this->m_EnvironmentalForce.X, -this->m_EnvironmentalForceMaxValue, this->m_EnvironmentalForceMaxValue);
+	this->m_EnvironmentalForce.Y = FMath::Clamp(this->m_EnvironmentalForce.Y, -this->m_EnvironmentalForceMaxValue, this->m_EnvironmentalForceMaxValue);
+	this->m_EnvironmentalForce.Z = FMath::Clamp(this->m_EnvironmentalForce.Z, -this->m_EnvironmentalForceMaxValue, this->m_EnvironmentalForceMaxValue);
+
+	UE_LOG(LogTemp, Warning, TEXT("ENV FORCE %s"), *this->m_EnvironmentalForce.ToString());
+
 }
 
 void UTankMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
@@ -184,10 +247,12 @@ void UTankMovementComponent::UpdateMovement(float DeltaTime)
 		if (m_BoostDurationCurrent <= 0.0f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("BOOST END"));
+			m_EnvironmentalForceBoostCounterAttackCurrent = m_EnvironmentalForceBoostCounterAttackMin;
 		}
 		else
 		{
 			SinValue = FMath::Sin(Percentage * PI) * m_BoostValueAmplitudeMax;
+			m_EnvironmentalForceBoostCounterAttackCurrent = m_EnvironmentalForceBoostCounterAttackMax;
 		}		
 
 		SinValue = FMath::Clamp(SinValue, 0.0f, m_BoostValueClampedMax);
@@ -198,10 +263,12 @@ void UTankMovementComponent::UpdateMovement(float DeltaTime)
 
 	//UE_LOG(LogTemp, Warning, TEXT("A %f __ BA %f __ D %f"), this->AccelerationCurrent, this->BoostAccelerationCurrent, BoostDurationCurrent);
 	
-	FVector NewSpeedVector = InputForceApplied * this->GetSpeedCurrent() + m_EnvironmentalForce;
-	//UE_LOG(LogTemp, Warning, TEXT("speed = %s "), *NewSpeedVector.ToString());
+	this->m_MovementVectorSpeed = InputForceApplied * this->GetSpeedCurrent() + m_EnvironmentalForce;
+	//UE_LOG(LogTemp, Warning, TEXT("speed = %s "), *this->m_MovementVectorSpeed.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("speed = %s "), *this->m_EnvironmentalForce.ToString());
 
-	this->MoveUpdatedComponent(NewSpeedVector * DeltaTime, this->GetOwner()->GetActorRotation(), true);
+
+	this->MoveUpdatedComponent(m_MovementVectorSpeed * DeltaTime, this->GetOwner()->GetActorRotation(), true);
 	this->UpdateComponentVelocity();
 }
 
@@ -227,7 +294,7 @@ void UTankMovementComponent::UpdateEnvironmentalForce(float DeltaTime)
 
 		if (NewEnvironmentalForce.X > 0.0f)
 		{
-			NewEnvironmentalForce.X -= m_EnvironmentalForceDecreaseValue * DeltaTime;
+			NewEnvironmentalForce.X -= m_EnvironmentalForceDecreaseValue * DeltaTime * m_EnvironmentalForceBoostCounterAttackCurrent;
 
 			if (NewEnvironmentalForce.X <= 0.0f)
 			{
@@ -236,7 +303,7 @@ void UTankMovementComponent::UpdateEnvironmentalForce(float DeltaTime)
 		}
 		else if (NewEnvironmentalForce.X < 0.0f)
 		{
-			NewEnvironmentalForce.X += m_EnvironmentalForceDecreaseValue * DeltaTime;
+			NewEnvironmentalForce.X += m_EnvironmentalForceDecreaseValue * DeltaTime * m_EnvironmentalForceBoostCounterAttackCurrent;
 
 			if (NewEnvironmentalForce.X >= 0.0f)
 			{
@@ -246,7 +313,7 @@ void UTankMovementComponent::UpdateEnvironmentalForce(float DeltaTime)
 
 		if (NewEnvironmentalForce.Y > 0.0f)
 		{
-			NewEnvironmentalForce.Y -= m_EnvironmentalForceDecreaseValue * DeltaTime;
+			NewEnvironmentalForce.Y -= m_EnvironmentalForceDecreaseValue * DeltaTime * m_EnvironmentalForceBoostCounterAttackCurrent;
 
 			if (NewEnvironmentalForce.Y <= 0.0f)
 			{
@@ -255,7 +322,7 @@ void UTankMovementComponent::UpdateEnvironmentalForce(float DeltaTime)
 		}
 		else if (NewEnvironmentalForce.Y < 0.0f)
 		{
-			NewEnvironmentalForce.Y += m_EnvironmentalForceDecreaseValue * DeltaTime;
+			NewEnvironmentalForce.Y += m_EnvironmentalForceDecreaseValue * DeltaTime * m_EnvironmentalForceBoostCounterAttackCurrent;
 
 			if (NewEnvironmentalForce.Y >= 0.0f)
 			{
@@ -269,6 +336,18 @@ void UTankMovementComponent::UpdateEnvironmentalForce(float DeltaTime)
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("Env FORCE __ %s"), *this->m_EnvironmentalForce.ToString());
+}
+
+void UTankMovementComponent::ResetMovement()
+{
+	this->m_BoostDurationCurrent = 0.0f;
+	this->BoostAccelerationCurrent = 0.0f;
+	this->AccelerationCurrent = this->AccelerationLimitMin;
+}
+
+FVector UTankMovementComponent::GetMovementVectorSpeed() const
+{
+	return this->m_MovementVectorSpeed;
 }
 
 void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)

@@ -33,6 +33,8 @@ public:
 
 	void AddDamage(float Damage);
 
+	void ResetMovement();
+
 	FTankDelegate OnDeath;
 	
 	UFUNCTION(BlueprintCallable, Category = "CompRef")
@@ -40,7 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CompRef")
 	UTankAimingComponent* GetTankAimingComponent() const;
 
-private:
+private:	
+
 	// Sets default values for this pawn's properties
 	ATank();
 
@@ -50,6 +53,10 @@ private:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION()
+		virtual void NotifyHit(class UPrimitiveComponent* SendHitComp, AActor* Other, class UPrimitiveComponent* GetHitComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+		//virtual void OnNotifyHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 		int32 m_startingHealth = 100;
 
@@ -58,6 +65,14 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 		float HeightElevation = 250.0f;	
+
+	UPROPERTY(EditDefaultsOnly)
+		float CollisionDamageMax = 5.0f;
+
+
+	UPROPERTY(EditDefaultsOnly)
+		float m_HitSendForceMaxValue = 15000.0f;
+		float m_HitSendForcePercentageReceivedValue = 0.2f;
 
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 		UTankMovementComponent* m_tankMovement;

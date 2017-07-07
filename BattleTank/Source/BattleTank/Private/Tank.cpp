@@ -37,6 +37,8 @@ void ATank::BeginPlay()
 	this->m_tankAiming = AimingComps[0];
 
 	m_currentHealth = m_startingHealth;
+
+	//this->NotifyHit.AddDynamic(this, &ATank::OnHit);
 }
 
 void ATank::Tick(float DeltaSeconds)
@@ -78,6 +80,60 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 	return DamageToApply;
 }*/
 
+void ATank::NotifyHit(class UPrimitiveComponent* SendHitComp, AActor* Other, class UPrimitiveComponent* GetHitComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (bSelfMoved)
+	{
+		FVector HitLocationn = HitLocation;
+
+		DrawDebugLine(
+			GetWorld(),
+			HitLocationn,
+			HitLocationn + HitNormal * 10000000.0f,
+			FColor(0, 0, 255),
+			false, -1, 0,
+			12.333
+		);
+
+		DrawDebugSphere(
+			GetWorld(),
+			HitLocationn,
+			48,
+			8,
+			FColor(0, 255, 0)
+		);
+
+		DrawDebugSphere(
+			GetWorld(),
+			Hit.ImpactPoint,
+			48,
+			8,
+			FColor(0, 255, 255)
+		);
+
+		float ForceHit = this->m_tankMovement->GetMovementVectorSpeed().Size();
+		ForceHit = FMath::Clamp<float>(ForceHit, 0, m_HitSendForceMaxValue);
+
+		ATank *TankHitten = Cast<ATank>(GetHitComp->GetOwner());
+		if (TankHitten != nullptr)
+		{
+			TankHitten->AddEnvironmentalForce(HitNormal * -ForceHit);
+			TankHitten->AddDamage((ForceHit / m_HitSendForceMaxValue) * CollisionDamageMax);
+		}
+
+		ATank *TankThis = Cast<ATank>(SendHitComp->GetOwner());
+		if (TankHitten != nullptr)
+		{
+			TankThis->AddEnvironmentalForce(HitNormal * ForceHit * m_HitSendForcePercentageReceivedValue);
+			TankThis->AddDamage((ForceHit / m_HitSendForceMaxValue) * CollisionDamageMax);		
+
+			UE_LOG(LogTemp, Warning, TEXT("HIT %s __ %s__Normal %s __ FORCE %s %f"), *SendHitComp->GetOwner()->GetName(), *GetHitComp->GetOwner()->GetName(), *HitNormal.ToString(), *this->m_tankMovement->GetMovementVectorSpeed().ToString(), ForceHit);
+
+			TankThis->ResetMovement();
+		}
+	}
+}
+
 void ATank::InitialiseMoveComp()
 {
 	if (!ensure(this->m_tankMovement))
@@ -107,7 +163,12 @@ void ATank::Fire()
 	if (!ensure(this->m_tankAiming))
 		return;
 
+	if (!ensure(this->m_tankMovement))
+		return;
+
 	this->m_tankAiming->Fire();
+
+	//this->m_tankMovement->AddEnvironmentalForce(this->GetActorForwardVector() * 50000.0f);
 }
 
 void ATank::Move(float ForwardAxisValue, float RightAxisValue)
@@ -145,6 +206,11 @@ void ATank::AddDamage(float Damage)
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("%s had %f healt but take %i / %f damage = %i"), *TankName, m_lastHealth, DamageToApply, Damage, this->m_currentHealth);
+}
+
+void ATank::ResetMovement()
+{
+	this->m_tankMovement->ResetMovement();
 }
 
 

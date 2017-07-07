@@ -164,7 +164,6 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 }
 
-
 //void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
 //{
 //	if (!ensure(m_turret))

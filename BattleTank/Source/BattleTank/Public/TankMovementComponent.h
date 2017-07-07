@@ -43,6 +43,8 @@ public:
 		int32 GetBoostGaugeReloadTimePercentage() const;
 
 	void AddEnvironmentalForce(FVector EnvironmentalForce);
+	void ResetMovement();
+	FVector GetMovementVectorSpeed() const;
 
 private:
 
@@ -57,7 +59,7 @@ private:
 
 	void UpdateBoost(float DeltaTime);
 
-	void UpdateEnvironmentalForce(float DeltaTime);
+	void UpdateEnvironmentalForce(float DeltaTime);	
 
 	//UHoverTankTrack *HoverTrack = nullptr;	
 	FVector MoveDirection;
@@ -91,7 +93,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Boost")
 	float m_BoostValueClampedMax = 25000.0f;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "Boost")
 		int32 m_BoostGaugeNumberMax = 5;
 		int32 m_BoostGaugeNumberCurrent;
@@ -99,6 +100,12 @@ private:
 		//in seconds
 	UPROPERTY(EditDefaultsOnly, Category = "Boost")
 		float m_BoostGaugeReloadTimeMax = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boost")
+	float m_EnvironmentalForceBoostCounterAttackMax = 5.0f;
+	float m_EnvironmentalForceBoostCounterAttackMin = 1.0f;
+	float m_EnvironmentalForceBoostCounterAttackCurrent;
+
 	//in seconds
 	float m_BoostGaugeReloadTimeCurrent;
 
@@ -106,6 +113,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "EnvironmentalForce")
 		float m_EnvironmentalForceDecreaseValue = 10000.0f;
 
-	FVector m_EnvironmentalForce;
+	UPROPERTY(EditDefaultsOnly, Category = "EnvironmentalForce")
+		float m_EnvironmentalForceMaxValue = 50000.0f;
 
+	FVector m_EnvironmentalForce;
+	FVector m_MovementVectorSpeed;
+
+	
+	
 };

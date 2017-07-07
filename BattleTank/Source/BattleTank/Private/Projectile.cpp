@@ -42,7 +42,7 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();	
 
 	this->m_collisionComp->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
-	this->m_collisionComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
+	//this->m_collisionComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
 
 	//FVector vectir = this->GetActorForwardVector();
 	//FVector scale = this->GetActorScale() / 2.0f;
@@ -117,11 +117,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	this->GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AProjectile::OnTimerExpire, this->m_destroyDelay, false);
 }
 
+/*
 void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("OVERLAPP %s __ %s"), *OverlappedComp->GetOwner()->GetName(), *OtherComp->GetOwner()->GetName())
 }
-
+*/
 void AProjectile::OnTimerExpire()
 {
 	this->Destroy();
