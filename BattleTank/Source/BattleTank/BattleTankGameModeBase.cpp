@@ -50,4 +50,32 @@ ATankPlayerController* ABattleTankGameModeBase::GetTankPlayerControllers(int32 I
 	return nullptr;
 }
 
+void ABattleTankGameModeBase::SetGameState(EGameState NewGameState)
+{
+	this->m_GameState = NewGameState;
+
+	switch (this->m_GameState)
+	{
+	case EGameState::EGameState_READY:
+		{
+			for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
+			{
+				this->m_TankPlayerControllersArray[i]->DisableInput(this->m_TankPlayerControllersArray[i]);
+				UE_LOG(LogTemp, Warning, TEXT("TEST"));
+
+
+				SetGameState(EGameState::EGameState_PLAYING);
+			}
+		}
+	case EGameState::EGameState_PLAYING:
+	{
+		for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
+		{
+			this->m_TankPlayerControllersArray[i]->EnableInput(this->m_TankPlayerControllersArray[i]);
+			UE_LOG(LogTemp, Warning, TEXT("TEST2"));
+		}
+	}
+	}
+}
+
 
