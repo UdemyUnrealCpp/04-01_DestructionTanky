@@ -36,11 +36,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TankRef")
 		ATank* GetTankControlled() const;
 
+	bool IsDead() const;
+
 	
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
 	void InitPlayerUIWidget(ATank* TankPlayerRef);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dead")
+		void Dead();
 
 private:
 
@@ -72,6 +77,8 @@ private:
 	ATank* m_tankControlled;
 
 	bool m_bIsInitialized;
+
+	bool m_bIsDead;
 
 	FVector2D m_splitscreenOrigin;
 	FVector2D m_splitscreenSize;

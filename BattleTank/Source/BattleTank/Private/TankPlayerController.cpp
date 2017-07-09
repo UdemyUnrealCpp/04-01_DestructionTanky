@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
+#include "BattleTankGameModeBase.h"
 #include "TankAimingComponent.h"
 #include "TankMovementComponent.h"
 #include "Tank.h"
@@ -17,15 +18,18 @@ void ATankPlayerController::BeginPlay()
 	if (!ensure(m_tankControlled)) { return; }*/	
 
 	//this->InitSplitScreenData();
-
-
 	this->m_bIsInitialized = false;
+	this->m_bIsDead = false;
 }
 
 
 void ATankPlayerController::Tick(float fDeltaTime)
 {
 	Super::Tick(fDeltaTime);
+
+	if (this->m_bIsDead)
+		return;
+
 
 	if (!this->m_bIsInitialized)
 	{
@@ -116,6 +120,11 @@ ATank* ATankPlayerController::GetTankControlled() const
 	return this->m_tankControlled;
 }
 
+bool ATankPlayerController::IsDead() const
+{
+	return this->m_bIsDead;
+}
+
 //deproject the screen position of the crosshair to a world direction
 bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const
 {	
@@ -163,6 +172,13 @@ void ATankPlayerController::SetPawn(APawn * InPawn)
 void ATankPlayerController::OnPossessedTankDeath()
 {
 	StartSpectatingOnly();
+	Dead();
+	this->DisableInput(this);
+	m_tankControlled->Destroy();
+	m_bIsDead = true;
+
+	ABattleTankGameModeBase* BattleTankGameMode = Cast<ABattleTankGameModeBase>(this->GetWorld()->GetAuthGameMode());
+	BattleTankGameMode->CheckGameEnd();
 }
 
 void ATankPlayerController::InputBoost()
@@ -204,7 +220,6 @@ void ATankPlayerController::Init()
 
 	this->m_bIsInitialized = true;
 }
-
 
 void ATankPlayerController::InitSplitScreenData()
 {

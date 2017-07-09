@@ -7,6 +7,12 @@
 #include "BattleTankGameModeBase.h"
 
 
+ABattleTankGameModeBase::ABattleTankGameModeBase()
+{
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 
 void ABattleTankGameModeBase::SetTankPlayerControllers(TArray<ATankPlayerController*> TankPlayerControllers)
 {
@@ -21,12 +27,10 @@ void ABattleTankGameModeBase::SetTankPlayerControllers(TArray<ATankPlayerControl
 	}
 }
 
-
 TArray<ATankPlayerController*> ABattleTankGameModeBase::GetTankPlayerControllers() const
 {
 	return this->m_TankPlayerControllersArray;
 }
-
 
 TArray<APawn*> ABattleTankGameModeBase::GetPawnsControlledByPlayers() const
 {
@@ -34,7 +38,10 @@ TArray<APawn*> ABattleTankGameModeBase::GetPawnsControlledByPlayers() const
 
 	for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
 	{
-		PawnsControlledByPlayers.Add(this->m_TankPlayerControllersArray[i]->GetPawn());
+		if (!this->m_TankPlayerControllersArray[i]->IsDead())
+		{
+			PawnsControlledByPlayers.Add(this->m_TankPlayerControllersArray[i]->GetPawn());
+		}
 	}
 
 	return PawnsControlledByPlayers;
@@ -50,32 +57,112 @@ ATankPlayerController* ABattleTankGameModeBase::GetTankPlayerControllers(int32 I
 	return nullptr;
 }
 
-void ABattleTankGameModeBase::SetGameState(EGameState NewGameState)
+void ABattleTankGameModeBase::CheckGameEnd()
 {
-	this->m_GameState = NewGameState;
+	int32 NumberPlayerAlive = 0;
 
-	switch (this->m_GameState)
+	for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
 	{
-	case EGameState::EGameState_READY:
+		if (!this->m_TankPlayerControllersArray[i]->IsDead())
 		{
-			for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
-			{
-				this->m_TankPlayerControllersArray[i]->DisableInput(this->m_TankPlayerControllersArray[i]);
-				UE_LOG(LogTemp, Warning, TEXT("TEST"));
-
-
-				SetGameState(EGameState::EGameState_PLAYING);
-			}
-		}
-	case EGameState::EGameState_PLAYING:
-	{
-		for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
-		{
-			this->m_TankPlayerControllersArray[i]->EnableInput(this->m_TankPlayerControllersArray[i]);
-			UE_LOG(LogTemp, Warning, TEXT("TEST2"));
+			++NumberPlayerAlive;
 		}
 	}
+
+	if (NumberPlayerAlive <= 1)
+	{
+		SetGameState(EGameState::EGameState_END);	
 	}
 }
 
 
+void ABattleTankGameModeBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	UpdateGameState(DeltaSeconds);
+}
+
+void ABattleTankGameModeBase::SetGameState(EGameState NewGameState)
+{
+
+	this->m_GameState = NewGameState;
+
+	switch (this->m_GameState)
+	{
+	case EGameState::EGameState_INIT:
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Change state TO EGameState::EGameState_INIT "));
+			break;
+		}
+	case EGameState::EGameState_READY:
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Change state TO EGameState::EGameState_READY "));
+
+			for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
+			{
+				this->m_TankPlayerControllersArray[i]->DisableInput(this->m_TankPlayerControllersArray[i]);
+			}
+
+			this->m_StartTimerCurrent = this->m_StartTimerMax + 1.0f;
+			break;
+		}
+	case EGameState::EGameState_PLAYING:
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Change state TO EGameState::EGameState_PLAYING "));
+
+			for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
+			{
+				this->m_TankPlayerControllersArray[i]->EnableInput(this->m_TankPlayerControllersArray[i]);
+			}
+			break;
+		}
+	case EGameState::EGameState_END:
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Change state TO EGameState::EGameState_END "));		
+
+			for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
+			{
+				this->m_TankPlayerControllersArray[i]->DisableInput(this->m_TankPlayerControllersArray[i]);
+			}
+
+			GameEnd();
+			break;
+		}
+	}
+}
+
+float ABattleTankGameModeBase::GetStartTimerCurrent()
+{
+	return this->m_StartTimerCurrent;
+}
+
+
+void ABattleTankGameModeBase::UpdateGameState(float DeltaSeconds)
+{
+	switch (this->m_GameState)
+	{
+	case EGameState::EGameState_INIT:
+	{
+		break;
+	}
+	case EGameState::EGameState_READY:
+	{
+		this->m_StartTimerCurrent -= DeltaSeconds;
+
+		if (this->m_StartTimerCurrent <= 1.0f)//1.0f for the display of GO in ui
+		{
+			this->SetGameState(EGameState::EGameState_PLAYING);
+		}
+		break;
+	}
+	case EGameState::EGameState_PLAYING:
+	{
+		if (this->m_StartTimerCurrent > 0.0f)
+		{
+			this->m_StartTimerCurrent -= DeltaSeconds;
+		}
+		break;
+	}
+	}
+}
