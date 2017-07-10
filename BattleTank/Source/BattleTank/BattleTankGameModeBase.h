@@ -77,8 +77,11 @@ public:
 
 	void CheckGameEnd();
 
-	UFUNCTION(BlueprintCallable, Category = "Timer")
+	UFUNCTION(BlueprintCallable, Category = "PlayerScore")
 	TArray<FBattleTankPlayerScore> GetPlayerScore() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GameState")
+	EGameState GetGameState() const;
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameState")

@@ -107,6 +107,11 @@ TArray<FBattleTankPlayerScore> ABattleTankGameModeBase::GetPlayerScore() const
 	return this->m_PlayerScore;
 }
 
+EGameState ABattleTankGameModeBase::GetGameState() const
+{
+	return this->m_GameState;
+}
+
 
 void ABattleTankGameModeBase::Tick(float DeltaSeconds)
 {
