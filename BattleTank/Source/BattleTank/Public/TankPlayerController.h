@@ -36,6 +36,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TankRef")
 		ATank* GetTankControlled() const;
 
+	int32 GetLeaderboardPosition() const;
+	float GetSurviveTime() const;
 	bool IsDead() const;
 
 	

@@ -17,6 +17,42 @@ enum class EGameState : uint8
 	EGameState_END	UMETA(DisplayName = "End")
 };
 
+USTRUCT(BlueprintType)
+struct FBattleTankPlayerScore
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+		int32 m_PlayerId;
+
+	//for current game
+	UPROPERTY(BlueprintReadOnly)
+		int32 m_PlayerLeaderboardPos;
+
+	UPROPERTY(BlueprintReadOnly)
+		int32 m_PlayerScore;
+
+	UPROPERTY(BlueprintReadOnly)
+		float m_SurvivreTime;
+
+
+	FBattleTankPlayerScore()
+	{
+		m_PlayerId = -1;
+		m_PlayerLeaderboardPos = -1;
+		m_PlayerScore = -1;
+		m_SurvivreTime = 0.0f;
+	}
+
+	FBattleTankPlayerScore(int PlayerId)
+	{
+		m_PlayerId = PlayerId;
+		m_PlayerLeaderboardPos = -1;
+		m_PlayerScore = -1;
+		m_SurvivreTime = 0.0f;
+	}
+};
+
 
 /**
  * 
@@ -41,6 +77,9 @@ public:
 
 	void CheckGameEnd();
 
+	UFUNCTION(BlueprintCallable, Category = "Timer")
+	TArray<FBattleTankPlayerScore> GetPlayerScore() const;
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameState")
 		void GameEnd();
@@ -49,6 +88,8 @@ private:
 	virtual void Tick(float DeltaSeconds) override;
 
 	TArray<ATankPlayerController*> m_TankPlayerControllersArray;
+
+	TArray<FBattleTankPlayerScore> m_PlayerScore;
 
 	UPROPERTY(EditAnywhere, Category = "Enum")
 		EGameState m_GameState;
@@ -68,8 +109,13 @@ private:
 
 
 	void UpdateGameState(float DeltaSeconds);
+	void CalculatePlayersScore(int32 PlayerId, bool isDeath);
 
 	float m_GamePlayingTimeStart;
 	float m_GamePlayingTimeElapsed;
 
 };
+
+
+
+

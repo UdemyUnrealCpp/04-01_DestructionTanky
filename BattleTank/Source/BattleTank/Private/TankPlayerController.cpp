@@ -120,6 +120,16 @@ ATank* ATankPlayerController::GetTankControlled() const
 	return this->m_tankControlled;
 }
 
+int32 ATankPlayerController::GetLeaderboardPosition() const
+{
+	return this->m_LeaderboardPosition;
+}
+
+float ATankPlayerController::GetSurviveTime() const
+{
+	return this->m_SurvivreTime;
+}
+
 bool ATankPlayerController::IsDead() const
 {
 	return this->m_bIsDead;
@@ -172,9 +182,11 @@ void ATankPlayerController::SetPawn(APawn * InPawn)
 void ATankPlayerController::OnPossessedTankDeath()
 {
 	ABattleTankGameModeBase* BattleTankGameMode = Cast<ABattleTankGameModeBase>(this->GetWorld()->GetAuthGameMode());
-
+	//include the current player that will be dead
 	this->m_LeaderboardPosition = BattleTankGameMode->GetNumberPlayerControllerAlive();
+	UE_LOG(LogTemp, Warning, TEXT("m_LeaderboardPosition %d"), this->m_LeaderboardPosition);
 	this->m_SurvivreTime = BattleTankGameMode->GetGamePlayingTimeElapsed();
+	UE_LOG(LogTemp, Warning, TEXT("m_SurvivreTime %f"), this->m_SurvivreTime);
 
 	StartSpectatingOnly();
 	Dead();

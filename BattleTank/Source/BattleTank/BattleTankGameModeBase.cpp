@@ -23,6 +23,12 @@ void ABattleTankGameModeBase::SetTankPlayerControllers(TArray<ATankPlayerControl
 		if (this->m_TankPlayerControllersArray[i] != nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("TPC : %s"), *this->m_TankPlayerControllersArray[i]->GetName());
+			if (m_PlayerScore.Num() < this->m_TankPlayerControllersArray.Num())
+			{
+				//m_PlayerScore.Add(new FBattleTankPlayerScore(i));
+				m_PlayerScore.Add(FBattleTankPlayerScore(i));
+				UE_LOG(LogTemp, Warning, TEXT("TPCscore : %d"), m_PlayerScore[i].m_PlayerId);
+			}		
 		}
 	}
 }
@@ -96,6 +102,12 @@ void ABattleTankGameModeBase::CheckGameEnd()
 }
 
 
+TArray<FBattleTankPlayerScore> ABattleTankGameModeBase::GetPlayerScore() const
+{
+	return this->m_PlayerScore;
+}
+
+
 void ABattleTankGameModeBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -146,6 +158,7 @@ void ABattleTankGameModeBase::SetGameState(EGameState NewGameState)
 			for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
 			{
 				this->m_TankPlayerControllersArray[i]->DisableInput(this->m_TankPlayerControllersArray[i]);
+				CalculatePlayersScore(i, this->m_TankPlayerControllersArray[i]->IsDead());
 			}
 
 			GameEnd();
@@ -189,5 +202,21 @@ void ABattleTankGameModeBase::UpdateGameState(float DeltaSeconds)
 		UE_LOG(LogTemp, Warning, TEXT("%s __ %f"), *this->GetName(), m_GamePlayingTimeElapsed);
 		break;
 	}
+	}
+}
+
+void ABattleTankGameModeBase::CalculatePlayersScore(int32 PlayerId, bool isDeath)
+{
+	if (isDeath)
+	{
+		this->m_PlayerScore[PlayerId].m_PlayerLeaderboardPos = this->m_TankPlayerControllersArray[PlayerId]->GetLeaderboardPosition();
+		this->m_PlayerScore[PlayerId].m_PlayerScore = this->m_TankPlayerControllersArray.Num() - this->m_PlayerScore[PlayerId].m_PlayerLeaderboardPos;
+		this->m_PlayerScore[PlayerId].m_SurvivreTime = this->m_TankPlayerControllersArray[PlayerId]->GetSurviveTime();
+	}
+	else // first
+	{
+		this->m_PlayerScore[PlayerId].m_PlayerLeaderboardPos = 1;
+		this->m_PlayerScore[PlayerId].m_PlayerScore = this->m_TankPlayerControllersArray.Num() - this->m_PlayerScore[PlayerId].m_PlayerLeaderboardPos;
+		this->m_PlayerScore[PlayerId].m_SurvivreTime = 999999;
 	}
 }
