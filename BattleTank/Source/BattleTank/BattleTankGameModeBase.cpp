@@ -199,7 +199,7 @@ void ABattleTankGameModeBase::UpdateGameState(float DeltaSeconds)
 		}
 
 		m_GamePlayingTimeElapsed = UGameplayStatics::GetRealTimeSeconds(GetWorld()) - m_GamePlayingTimeStart;
-		UE_LOG(LogTemp, Warning, TEXT("%s __ %f"), *this->GetName(), m_GamePlayingTimeElapsed);
+		//UE_LOG(LogTemp, Warning, TEXT("%s __ %f"), *this->GetName(), m_GamePlayingTimeElapsed);
 		break;
 	}
 	}
