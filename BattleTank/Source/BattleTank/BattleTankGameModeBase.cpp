@@ -57,6 +57,26 @@ ATankPlayerController* ABattleTankGameModeBase::GetTankPlayerControllers(int32 I
 	return nullptr;
 }
 
+int32 ABattleTankGameModeBase::GetNumberPlayerControllerAlive() const
+{
+	int32 NumberPlayerAlive = 0;
+
+	for (int i = 0; i < this->m_TankPlayerControllersArray.Num(); ++i)
+	{
+		if (!this->m_TankPlayerControllersArray[i]->IsDead())
+		{
+			++NumberPlayerAlive;
+		}
+	}
+
+	return NumberPlayerAlive;
+}
+
+float ABattleTankGameModeBase::GetGamePlayingTimeElapsed() const
+{
+	return this->m_GamePlayingTimeElapsed;
+}
+
 void ABattleTankGameModeBase::CheckGameEnd()
 {
 	int32 NumberPlayerAlive = 0;
@@ -80,7 +100,7 @@ void ABattleTankGameModeBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UpdateGameState(DeltaSeconds);
+	UpdateGameState(DeltaSeconds);	
 }
 
 void ABattleTankGameModeBase::SetGameState(EGameState NewGameState)
@@ -115,6 +135,8 @@ void ABattleTankGameModeBase::SetGameState(EGameState NewGameState)
 			{
 				this->m_TankPlayerControllersArray[i]->EnableInput(this->m_TankPlayerControllersArray[i]);
 			}
+
+			m_GamePlayingTimeStart = UGameplayStatics::GetRealTimeSeconds(GetWorld());
 			break;
 		}
 	case EGameState::EGameState_END:
@@ -162,6 +184,9 @@ void ABattleTankGameModeBase::UpdateGameState(float DeltaSeconds)
 		{
 			this->m_StartTimerCurrent -= DeltaSeconds;
 		}
+
+		m_GamePlayingTimeElapsed = UGameplayStatics::GetRealTimeSeconds(GetWorld()) - m_GamePlayingTimeStart;
+		UE_LOG(LogTemp, Warning, TEXT("%s __ %f"), *this->GetName(), m_GamePlayingTimeElapsed);
 		break;
 	}
 	}

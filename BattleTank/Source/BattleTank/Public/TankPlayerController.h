@@ -82,4 +82,8 @@ private:
 
 	FVector2D m_splitscreenOrigin;
 	FVector2D m_splitscreenSize;
+
+	float m_SurvivreTime;
+	int32 m_LeaderboardPosition;
 };
+

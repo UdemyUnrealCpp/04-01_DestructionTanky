@@ -171,13 +171,17 @@ void ATankPlayerController::SetPawn(APawn * InPawn)
 
 void ATankPlayerController::OnPossessedTankDeath()
 {
+	ABattleTankGameModeBase* BattleTankGameMode = Cast<ABattleTankGameModeBase>(this->GetWorld()->GetAuthGameMode());
+
+	this->m_LeaderboardPosition = BattleTankGameMode->GetNumberPlayerControllerAlive();
+	this->m_SurvivreTime = BattleTankGameMode->GetGamePlayingTimeElapsed();
+
 	StartSpectatingOnly();
 	Dead();
 	this->DisableInput(this);
 	m_tankControlled->Destroy();
 	m_bIsDead = true;
 
-	ABattleTankGameModeBase* BattleTankGameMode = Cast<ABattleTankGameModeBase>(this->GetWorld()->GetAuthGameMode());
 	BattleTankGameMode->CheckGameEnd();
 }
 

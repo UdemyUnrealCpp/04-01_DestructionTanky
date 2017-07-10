@@ -35,6 +35,10 @@ public:
 
 	ATankPlayerController* GetTankPlayerControllers(int32 Index) const;
 
+	int32 GetNumberPlayerControllerAlive() const;
+
+	float GetGamePlayingTimeElapsed() const;
+
 	void CheckGameEnd();
 
 protected:
@@ -51,7 +55,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Timer")
 	float m_StartTimerMax = 3.0f;
-
 	float m_StartTimerCurrent;
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerRef")
@@ -65,5 +68,8 @@ private:
 
 
 	void UpdateGameState(float DeltaSeconds);
+
+	float m_GamePlayingTimeStart;
+	float m_GamePlayingTimeElapsed;
 
 };
