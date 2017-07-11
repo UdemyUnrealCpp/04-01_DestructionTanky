@@ -48,6 +48,7 @@ public:
 	int32 GetAmmoReloadTimePercentage() const;
 
 	FVector GetBarrelLocation() const;
+	FVector GetBarrelProjectileLocation() const;
 
 	float GetAmmoPercent() const;
 

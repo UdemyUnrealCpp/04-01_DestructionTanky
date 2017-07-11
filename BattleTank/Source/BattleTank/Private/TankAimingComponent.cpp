@@ -111,6 +111,13 @@ FVector UTankAimingComponent::GetBarrelLocation() const
 	return this->m_barrel->GetSocketLocation(FName("BarrelStart"));
 }
 
+FVector UTankAimingComponent::GetBarrelProjectileLocation() const
+{
+	if (!this->m_barrel) { return FVector::ZeroVector; }
+
+	return this->m_barrel->GetSocketLocation(FName("Projectile"));
+}
+
 float UTankAimingComponent::GetAmmoPercent() const
 {
 	return m_iNumberAmmoLeft / (float)m_iNumberAmmoMax;
@@ -123,7 +130,8 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 	FRotator AimAsRotator = AimDirection.Rotation();
 	this->m_barrel->SetRotationPitch(AimAsRotator.Pitch);
-	FVector StartLocation = this->m_barrel->GetSocketLocation(FName("BarrelStart"));
+	//FVector StartLocation = this->m_barrel->GetSocketLocation(FName("BarrelStart"));
+	FVector StartLocation = GetBarrelProjectileLocation();
 
 	/*
 	DrawDebugLine(
@@ -133,7 +141,7 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 		FColor(255, 0, 0),
 		false, -1, 0,
 		12.333
-	);*/	
+	);*/
 
 
 	FHitResult HitResult;

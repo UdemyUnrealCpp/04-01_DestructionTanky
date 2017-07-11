@@ -97,7 +97,7 @@ bool ATankPlayerController::GetSightRayHitDirection(FVector &outHitDirection) co
 			UTankAimingComponent* AimComp = this->GetPawn()->FindComponentByClass<UTankAimingComponent>();
 			if (!ensure(AimComp)) { return false; }
 			
-			FVector StartLocation = AimComp->GetBarrelLocation();
+			FVector StartLocation = AimComp->GetBarrelProjectileLocation();
 			LookDirection = HitLocation - StartLocation;
 			outHitDirection = LookDirection.GetSafeNormal();
 
@@ -142,7 +142,9 @@ bool ATankPlayerController::IsDead() const
 bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const
 {	
 	FVector WorldLocation;
-	return DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.Y, WorldLocation, LookDirection);	
+	
+    return DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.Y, WorldLocation, LookDirection);	
+	//return DeprojectMousePositionToWorld(WorldLocation, LookDirection);
 }
 
 bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const

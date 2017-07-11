@@ -83,7 +83,7 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 void ATank::NotifyHit(class UPrimitiveComponent* SendHitComp, AActor* Other, class UPrimitiveComponent* GetHitComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (bSelfMoved)
-	{
+	{ 
 		FVector HitLocationn = HitLocation;
 
 		/*
