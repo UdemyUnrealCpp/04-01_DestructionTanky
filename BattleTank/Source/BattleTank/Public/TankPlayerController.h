@@ -24,6 +24,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)		
 		float CrosshairYLocation = 1.0f / 3.0f;	
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		int32 CrosshairXSize = 64;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		int32 CrosshairYSize = 64;
+
+
 	UFUNCTION(BlueprintCallable, Category = "Input")
 		void InputBoost();
 

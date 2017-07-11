@@ -86,6 +86,7 @@ void ATank::NotifyHit(class UPrimitiveComponent* SendHitComp, AActor* Other, cla
 	{
 		FVector HitLocationn = HitLocation;
 
+		/*
 		DrawDebugLine(
 			GetWorld(),
 			HitLocationn,
@@ -109,7 +110,7 @@ void ATank::NotifyHit(class UPrimitiveComponent* SendHitComp, AActor* Other, cla
 			48,
 			8,
 			FColor(0, 255, 255)
-		);
+		);*/
 
 		float ForceHit = this->m_tankMovement->GetMovementVectorSpeed().Size();
 		ForceHit = FMath::Clamp<float>(ForceHit, 0, m_HitSendForceMaxValue);

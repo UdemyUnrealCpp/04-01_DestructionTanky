@@ -80,7 +80,9 @@ bool ATankPlayerController::GetSightRayHitDirection(FVector &outHitDirection) co
 	GetViewportSize(iViewportSizeX, iViewportSizeY);
 
 	//find crosshair position in pixel coordinate
-	FVector2D ScreenLocation = FVector2D(m_splitscreenOrigin.X + (this->CrosshairXLocation * m_splitscreenSize.X), m_splitscreenOrigin.Y + (this->CrosshairYLocation * m_splitscreenSize.Y));
+	FVector2D ScreenLocation = FVector2D(m_splitscreenOrigin.X + ((this->CrosshairXLocation * m_splitscreenSize.X) /*+ (this->CrosshairXSize / 2)*/), m_splitscreenOrigin.Y + ((this->CrosshairYLocation * m_splitscreenSize.Y) /*+ (this->CrosshairYSize / 2)*/));
+
+	//UE_LOG(LogTemp, Warning, TEXT("ScreenLocation %s"), *ScreenLocation.ToString());
 
 	//deproject the screen position of the crosshair to a world direction
 	FVector LookDirection;
@@ -99,6 +101,7 @@ bool ATankPlayerController::GetSightRayHitDirection(FVector &outHitDirection) co
 			LookDirection = HitLocation - StartLocation;
 			outHitDirection = LookDirection.GetSafeNormal();
 
+			/*
 			DrawDebugLine(
 				GetWorld(),
 				StartLocation,
@@ -106,7 +109,7 @@ bool ATankPlayerController::GetSightRayHitDirection(FVector &outHitDirection) co
 				FColor(0, 255, 0),
 				false, -1, 0,
 				12.333
-			);
+			);*/
 			return true;
 		}
 	}

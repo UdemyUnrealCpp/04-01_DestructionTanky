@@ -19,7 +19,7 @@ UTankAimingComponent::UTankAimingComponent()
 void UTankAimingComponent::Initialise(UTankBarrel* barrelToSet)
 {
 	this->m_barrel = barrelToSet;
-	m_iNumberAmmoMax = 99;
+	//m_iNumberAmmoMax = 99;
 	m_iNumberAmmoLeft = m_iNumberAmmoMax;
 }
 
@@ -125,6 +125,7 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	this->m_barrel->SetRotationPitch(AimAsRotator.Pitch);
 	FVector StartLocation = this->m_barrel->GetSocketLocation(FName("BarrelStart"));
 
+	/*
 	DrawDebugLine(
 		GetWorld(),
 		StartLocation,
@@ -132,7 +133,7 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 		FColor(255, 0, 0),
 		false, -1, 0,
 		12.333
-	);	
+	);*/	
 
 
 	FHitResult HitResult;
@@ -146,13 +147,14 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 		{
 			FVector SphereCenter = HitResult.ImpactPoint;
 
+			/*
 			DrawDebugSphere(
 				GetWorld(),
 				SphereCenter,
 				48,
 				32,
 				FColor(0, 255, 0)
-			);
+			);*/
 		}
 	}
 
@@ -235,6 +237,7 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 bool UTankAimingComponent::IsBarrelMoving()
 {
+	
 	if (!ensure(m_barrel)) { return false; }
 
 	FVector BarrelForward = this->m_barrel->GetForwardVector();
@@ -252,10 +255,10 @@ void UTankAimingComponent::UpdateFiringState()
 	{
 		this->m_eFiringState = EFiringState::EFiringStatus_RELOADING;
 	}*/
-	else if (IsBarrelMoving())
+	/*else if (IsBarrelMoving())
 	{
 		this->m_eFiringState = EFiringState::EFiringStatus_AIMING;
-	}
+	}*/
 	else
 	{
 		this->m_eFiringState = EFiringState::EFiringStatus_LOCKED;
