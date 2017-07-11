@@ -49,6 +49,8 @@ public:
 
 	FVector GetBarrelLocation() const;
 
+	float GetAmmoPercent() const;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 		EFiringState m_eFiringState = EFiringState::EFiringStatus_RELOADING;

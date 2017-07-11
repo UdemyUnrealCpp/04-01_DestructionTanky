@@ -153,6 +153,11 @@ int32 UTankMovementComponent::GetBoostGaugeReloadTimePercentage() const
 	return Percentage * 100.0f;
 }
 
+float UTankMovementComponent::GetBoostPercent() const
+{
+	return this->m_BoostGaugeNumberCurrent / (float)this->m_BoostGaugeNumberMax;
+}
+
 void UTankMovementComponent::AddEnvironmentalForce(FVector EnvironmentalForce)
 {
 	this->m_EnvironmentalForce += EnvironmentalForce;

@@ -184,6 +184,16 @@ float ATank::GetHealthPercent() const
 	return (float)(this->m_currentHealth) / (float)(this->m_startingHealth);
 }
 
+float ATank::GetAmmoPercent() const
+{
+	return this->m_tankAiming->GetAmmoPercent();
+}
+
+float ATank::GetBoostPercent() const
+{
+	return this->m_tankMovement->GetBoostPercent();
+}
+
 void ATank::AddEnvironmentalForce(FVector EnvironmentalForce)
 {
 	this->m_tankMovement->AddEnvironmentalForce(EnvironmentalForce);

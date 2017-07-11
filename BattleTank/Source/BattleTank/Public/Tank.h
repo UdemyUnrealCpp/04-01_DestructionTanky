@@ -26,8 +26,14 @@ public:
 		void Fire();
 		void Move(float ForwardAxisValue, float RightAxisValue);
 
-	UFUNCTION(BlueprintPure, Category = "Health")
+	UFUNCTION(BlueprintCallable, Category = "Health")
 		float GetHealthPercent() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+		float GetAmmoPercent() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Boost")
+		float GetBoostPercent() const;
 
 	void AddEnvironmentalForce(FVector EnvironmentalForce);
 

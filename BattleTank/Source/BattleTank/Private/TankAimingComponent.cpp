@@ -111,6 +111,11 @@ FVector UTankAimingComponent::GetBarrelLocation() const
 	return this->m_barrel->GetSocketLocation(FName("BarrelStart"));
 }
 
+float UTankAimingComponent::GetAmmoPercent() const
+{
+	return m_iNumberAmmoLeft / (float)m_iNumberAmmoMax;
+}
+
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
 	if (!ensure(m_barrel))

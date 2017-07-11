@@ -45,6 +45,7 @@ public:
 	void AddEnvironmentalForce(FVector EnvironmentalForce);
 	void ResetMovement();
 	FVector GetMovementVectorSpeed() const;
+	float GetBoostPercent() const;
 
 private:
 
